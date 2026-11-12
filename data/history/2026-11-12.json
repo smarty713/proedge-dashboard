@@ -126,12 +126,13 @@
     {"name": "Krautbauer", "amount": 248, "failed": "2026-11-11"},
     {"name": "Guerrero", "amount": 209, "failed": null}
   ],
-  "weekly_actuals_note": "TD Bank actuals; week of Nov 9 pending (export ends Nov 9)",
+  "weekly_actuals_title": "Last 4 weeks + current week",
   "weekly_actuals": [
-    {"week_start": "2026-10-12", "income": 8854.31, "expense": 4933.81, "profit": 3920.50, "distributions": 2300.00},
-    {"week_start": "2026-10-19", "income": 7137.20, "expense": 3346.56, "profit": 3790.64, "distributions": 2500.00},
-    {"week_start": "2026-10-26", "income": 6335.10, "expense": 2232.87, "profit": 4102.23, "distributions": 4000.00},
-    {"week_start": "2026-11-02", "income": 5476.53, "expense": 5015.12, "profit": 461.41, "distributions": 2250.00}
+    {"week_start": "2026-10-12", "income": 8854.31, "expense": 4933.81, "profit": 3920.50, "distributions": 2300.00, "partial": false},
+    {"week_start": "2026-10-19", "income": 7137.20, "expense": 3346.56, "profit": 3790.64, "distributions": 2500.00, "partial": false},
+    {"week_start": "2026-10-26", "income": 6335.10, "expense": 2232.87, "profit": 4102.23, "distributions": 4000.00, "partial": false},
+    {"week_start": "2026-11-02", "income": 5476.53, "expense": 5015.12, "profit": 461.41, "distributions": 2250.00, "partial": false},
+    {"week_start": "2026-11-09", "income": 1922.04, "expense": 1000.00, "profit": 922.04, "distributions": 100.00, "partial": true, "through": "2026-11-10"}
   ],
   "snapshots": ["2026-11-12"]
 }

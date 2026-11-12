@@ -40,6 +40,7 @@ html:has(#app:not([hidden])){background:#12161c}
 #app .xfer table{width:100%;border-collapse:collapse;font-size:.85rem;color:#a39b8d}
 #app .xfer th,#app .xfer td{text-align:right;padding:8px 10px;border-bottom:1px solid rgba(243,239,230,.08);font-weight:500;white-space:nowrap}
 #app .xfer th:first-child{text-align:left;color:#c8bfb2;font-weight:500}
+#app .xfer .partial-tag{display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:#8d867b;font-weight:500}
 #app .kpi{background:rgba(26,31,39,.94);border:1px solid rgba(243,239,230,.10);border-radius:16px;padding:16px 16px 14px;min-height:128px}
 #app .kpi .label{margin:0;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#c8bfb2}
 #app .kpi .value,#app .partner .value,#app .due .amt,#app .pcard dd{font-variant-numeric:tabular-nums}
@@ -60,6 +61,7 @@ html:has(#app:not([hidden])){background:#12161c}
 #app .chart-box canvas{position:absolute;left:0;top:0;width:100% !important;height:100% !important}
 #app .chart-box.donut{height:240px}
 #app .chart-box.line{height:250px}
+#app #weekly-actuals .chart-box{height:300px}
 #app .chart-box.status{height:120px}
 #app .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;padding:0 18%}
 #app .donut-center span{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#c8bfb2}
@@ -537,21 +539,54 @@ function weeklyRows(data){
 function weeklyReady(rows){
   return rows.some(r=>r&&[r.income,r.expense,r.profit].some(v=>v!==null&&v!==undefined&&v!==""));
 }
+function weekAxisLabel(r){
+  const start=formatShort(r.week_start);
+  if(!r.partial) return start;
+  const through=r.through?formatShort(r.through):"";
+  return [start, through?"partial, through "+through:"partial"];
+}
+function weekHead(r){
+  const start=esc(formatShort(r.week_start));
+  return r.partial?start+'<br><span class="partial-tag">partial</span>':start;
+}
+function hatchPattern(color){
+  const c=document.createElement("canvas");
+  c.width=10;
+  c.height=10;
+  const g=c.getContext("2d");
+  g.clearRect(0,0,10,10);
+  g.fillStyle=color;
+  g.globalAlpha=0.22;
+  g.fillRect(0,0,10,10);
+  g.globalAlpha=0.95;
+  g.strokeStyle=color;
+  g.lineWidth=1.5;
+  g.beginPath();
+  g.moveTo(0,10);
+  g.lineTo(10,0);
+  g.moveTo(-1,1);
+  g.lineTo(1,-1);
+  g.moveTo(9,11);
+  g.lineTo(11,9);
+  g.stroke();
+  return g.createPattern(c,"repeat");
+}
 function weeklyActualsHTML(data){
   const rows=weeklyRows(data);
+  const title=data.weekly_actuals_title||"Last 4 weeks + current week";
   if(!weeklyReady(rows)){
     return `<section class="panel" id="weekly-actuals">
       <p class="kicker">TD Bank</p>
-      <h2>4-week Income / Expense / Profit</h2>
+      <h2>${esc(title)}</h2>
       <p class="pending-line">TD Bank weekly actuals pending</p>
     </section>`;
   }
   const note=data.weekly_actuals_note?`<p class="lede">${esc(data.weekly_actuals_note)}</p>`:"";
   const transfers=rows.filter(r=>r&&r.distributions!==null&&r.distributions!==undefined&&r.distributions!=="");
-  const transferRow=transfers.length?`<div class="xfer"><table><thead><tr><th></th>${transfers.map(r=>`<th>${esc(formatShort(r.week_start))}</th>`).join("")}</tr></thead><tbody><tr><th>Transfers to CK (unconfirmed)</th>${transfers.map(r=>`<td>${esc(usd(r.distributions))}</td>`).join("")}</tr></tbody></table></div>`:"";
+  const transferRow=transfers.length?`<div class="xfer"><table><thead><tr><th></th>${transfers.map(r=>`<th>${weekHead(r)}</th>`).join("")}</tr></thead><tbody><tr><th>Transfers to CK (unconfirmed)</th>${transfers.map(r=>`<td>${esc(usd(r.distributions))}</td>`).join("")}</tr></tbody></table></div>`:"";
   return `<section class="panel" id="weekly-actuals">
     <p class="kicker">TD Bank</p>
-    <h2>4-week Income / Expense / Profit</h2>
+    <h2>${esc(title)}</h2>
     ${note}
     <ul class="legend">
       <li><i class="swatch" style="background:#8eafc4"></i>Income</li>
@@ -733,21 +768,47 @@ function paintCharts(data,history,chartsReady){
     charts.push(new Chart(weeklyCanvas,{
       type:"bar",
       data:{
-        labels:actuals.map(r=>formatShort(r.week_start)),
+        labels:actuals.map(weekAxisLabel),
         datasets:[
-          {type:"bar",label:"Income",data:actuals.map(r=>r.income??null),backgroundColor:"#8eafc4",borderRadius:4,maxBarThickness:28},
-          {type:"bar",label:"Expense",data:actuals.map(r=>r.expense??null),backgroundColor:"#e08b84",borderRadius:4,maxBarThickness:28},
-          {type:"line",label:"Profit",data:actuals.map(r=>r.profit??null),borderColor:"#c6a46a",backgroundColor:"#c6a46a",pointBackgroundColor:"#c6a46a",pointRadius:4,tension:.25,spanGaps:false}
+          {type:"bar",label:"Income",data:actuals.map(r=>r.income??null),backgroundColor:actuals.map(r=>r.partial?hatchPattern("#8eafc4"):"#8eafc4"),borderRadius:4,maxBarThickness:22},
+          {type:"bar",label:"Expense",data:actuals.map(r=>r.expense??null),backgroundColor:actuals.map(r=>r.partial?hatchPattern("#e08b84"):"#e08b84"),borderRadius:4,maxBarThickness:22},
+          {type:"line",label:"Profit",data:actuals.map(r=>r.profit??null),borderColor:"#c6a46a",backgroundColor:"#c6a46a",pointBackgroundColor:actuals.map(r=>r.partial?"#12161c":"#c6a46a"),pointBorderColor:"#c6a46a",pointBorderWidth:2,pointRadius:actuals.map(r=>r.partial?6:4),tension:.25,spanGaps:false,segment:{borderDash(ctx){return actuals[ctx.p1DataIndex]&&actuals[ctx.p1DataIndex].partial?[5,4]:[];}}}
         ]
       },
       options:{
         responsive:true,
         maintainAspectRatio:false,
         animation:chartAnim(),
-        plugins:{legend:{display:false},tooltip:chartTooltip()},
+        plugins:{
+          legend:{display:false},
+          tooltip:{
+            backgroundColor:"#0e1218",
+            borderColor:"rgba(198,164,106,.45)",
+            borderWidth:1,
+            titleColor:"#e6d3ae",
+            bodyColor:"#ebe6dc",
+            padding:10,
+            cornerRadius:8,
+            callbacks:{
+              title(items){
+                const row=actuals[items[0].dataIndex];
+                const start=formatShort(row.week_start);
+                if(!row.partial) return start;
+                const through=row.through?formatShort(row.through):"";
+                return through?start+" · partial, through "+through:start+" · partial";
+              },
+              label(ctx){
+                const raw=ctx.raw;
+                const name=ctx.dataset.label||"Value";
+                if(raw===null||raw===undefined) return name+": pending";
+                return name+": "+usd(raw);
+              }
+            }
+          }
+        },
         scales:{
           y:{beginAtZero:true,grid:scaleGrid(),border:{display:false},ticks:{callback:axisMoney,maxTicksLimit:5}},
-          x:{grid:{display:false},border:{display:false}}
+          x:{grid:{display:false},border:{display:false},ticks:{maxRotation:0,autoSkip:false,font:{size:11}}}
         }
       }
     }));

@@ -40,7 +40,8 @@ A money field set to `null`, or a profit with `profit_pending: true`, renders as
 | `past_due` | array | `{ "name", "amount", "failed" }`. `failed` is `YYYY-MM-DD` or `null`. |
 | `snapshots` | array of strings | Dates that have a file in `data/history/`. |
 | `unique_customer_note` | string, optional | Shown under the unique-customer count. |
-| `weekly_actuals` | array | TD Bank weeks. Each item is `{ "week_start", "income", "expense", "profit", "distributions" }`. `week_start` is `YYYY-MM-DD`. Money fields are numbers, or `null` when unknown. An empty array renders the pending state. |
+| `weekly_actuals` | array | TD Bank weeks. Each item is `{ "week_start", "income", "expense", "profit", "distributions", "partial", "through" }`. `week_start` and `through` are `YYYY-MM-DD`. `partial: true` draws that week hatched and labels it partial through `through`. Money fields are numbers, or `null` when unknown. An empty array renders the pending state. |
+| `weekly_actuals_title` | string, optional | Chart heading. |
 | `weekly_actuals_note` | string, optional | Subtitle under the TD Bank chart. |
 | `kpis.profit_label` | string, optional | Label on the profit card. |
 | `kpis.profit_note` | string, optional | Note under that profit figure. |
@@ -128,6 +129,6 @@ AI Employee profit and vendor cost are pending. An unconfirmed cost in the previ
 
 Seller Assist has 60 paying customers. Vendor cost is 57 billable seats at $49, which is $2,793. Three payers have no vendor seat yet. Two internal accounts on the vendor list are not customers.
 
-`weekly_actuals` holds TD Bank weeks with `week_start`, `income`, `expense`, `profit`, and `distributions`. The chart draws income and expense as grouped bars and profit as a line. Distributions render on a separate row labeled Transfers to CK (unconfirmed). The week of Nov 9 is not in the file.
+`weekly_actuals` holds TD Bank weeks with `week_start`, `income`, `expense`, `profit`, `distributions`, and `partial`. The chart draws income and expense as grouped bars and profit as a line. A partial week is hatched, and its label reads partial through the `through` date. Distributions render on a separate row labeled Transfers to CK (unconfirmed). The week of Nov 9 is partial through Nov 10.
 
 Do not put a customer price-tier split on the page.
