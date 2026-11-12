@@ -54,12 +54,14 @@
       "id": "seller_assist",
       "label": "Seller Assist",
       "detail": "Includes iBuyer Offers",
-      "customers": 59,
+      "customers": 60,
+      "count_label": "paying customers",
       "revenue": 4169.69,
       "vendor_cost": 2793,
       "vendor_cost_note": "57 × $49",
       "profit": 1376.69,
-      "profit_pending": false
+      "profit_pending": false,
+      "note": "3 payers without a vendor seat (pending review). The vendor list's 2 internal accounts aren't customers."
     },
     {
       "id": "seller_lead_engine",
@@ -89,13 +91,24 @@
       "profit": null,
       "profit_pending": true,
       "note": "3 subscription, 15 wallet-funded, 1 own. Subscription revenue only. Wallet-funded share is not isolable."
+    },
+    {
+      "id": "saas_seats",
+      "label": "$1 SaaS seats",
+      "customers": 9,
+      "count_label": "seats",
+      "revenue": 9.00,
+      "vendor_cost": null,
+      "profit": null,
+      "profit_pending": true,
+      "note": "9 seats × $1."
     }
   ],
   "unique_customers": 98,
+  "unique_customer_note": "Excludes Robert Weichelt and Jeffery B Jewelers. Includes Mark States (Seller Assist, $82.50/mo).",
   "customer_status": [
     {"id": "paying", "label": "Paying", "count": 86},
     {"id": "past_due", "label": "Past due", "count": 3},
-    {"id": "no_active_sub", "label": "No active sub", "count": 4},
     {"id": "not_billed", "label": "Not billed", "count": 9}
   ],
   "past_due": [
@@ -103,5 +116,6 @@
     {"name": "Krautbauer", "amount": 248, "failed": "2026-11-11"},
     {"name": "Guerrero", "amount": 209, "failed": null}
   ],
+  "weekly_actuals": [],
   "snapshots": ["2026-11-12"]
 }

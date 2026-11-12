@@ -39,6 +39,8 @@ A money field set to `null`, or a profit with `profit_pending: true`, renders as
 | `customer_status` | array | `{ "id", "label", "count" }`. |
 | `past_due` | array | `{ "name", "amount", "failed" }`. `failed` is `YYYY-MM-DD` or `null`. |
 | `snapshots` | array of strings | Dates that have a file in `data/history/`. |
+| `unique_customer_note` | string, optional | Shown under the unique-customer count. |
+| `weekly_actuals` | array | TD Bank weeks. Each item is `{ "week_start", "income", "expense", "profit" }`. `week_start` is `YYYY-MM-DD`. Money fields are numbers, or `null` when unknown. An empty array renders the pending state. |
 
 ### `split_rule`
 
@@ -85,12 +87,15 @@ A money field set to `null`, or a profit with `profit_pending: true`, renders as
 | `profit` | number or null | Profit. `null` when it is not known. |
 | `profit_pending` | boolean | When true, profit renders as pending. |
 | `note` | string, optional | Shown under the card. |
+| `count_label` | string, optional | Word after the customer count. Defaults to `customers`. |
 
 Health on the card is derived, not stored. Pending when profit is pending. Loss when profit is negative. Healthy when profit is greater than zero.
 
 ### History file
 
-`data/history/YYYY-MM-DD.json` is the `current.json` document as of that date. The weekly chart reads `as_of`, `kpis.revenue`, and `kpis.profit` from each file named in `snapshots`.
+`data/history/YYYY-MM-DD.json` is the `current.json` document as of that date. The month-progress chart reads `as_of`, `kpis.revenue`, and `kpis.profit` from each file named in `snapshots`.
+
+The 4-week Income / Expense / Profit chart reads `weekly_actuals` from `data/current.json` only. Leave that array empty until the TD Bank figures exist. Do not fill it with estimates.
 
 ### Tie-outs the page computes
 
@@ -98,11 +103,13 @@ The page adds product revenue, known product profit, past-due amounts, and custo
 
 ## November 12, 2026 snapshot
 
-Product customer counts are the counts from the previous dashboard. CRM is one lower because one canceled CRM customer is no longer included. Unique customers are 98. The previous file stored 99.
+Product customer counts are the counts from the previous dashboard, with the November 12 adjustments below. CRM is one lower because one canceled CRM customer is no longer included.
 
-Stated total revenue is $9.00 higher than the sum of the product lines. No line was changed to absorb that difference.
+Unique customers are 98. Robert Weichelt and Jeffery B Jewelers are excluded. Mark States is included (Seller Assist, $82.50/mo). That $82.50 is not added again on top of Seller Assist revenue.
 
-Customer-status counts add to 102. Unique customers are 98.
+`$1 SaaS seats` is $9.00 for 9 seats. With that line, product revenue matches the stated total. Its vendor cost and profit are pending.
+
+Customer statuses are paying 86, past due 3, and not billed 9. Those add to 98.
 
 CRM vendor cost is the GHL Founders Subscription from the previous dashboard. It is the amount left after affiliate payouts are taken out of CRM revenue to reach CRM profit.
 
@@ -112,6 +119,8 @@ Service Plans vendor cost is zero because profit equals revenue.
 
 AI Employee profit and vendor cost are pending. An unconfirmed cost in the previous file was not carried forward.
 
-Seller Assist vendor cost uses the seat count in `vendor_cost_note`. The customer count on that line stays 59.
+Seller Assist has 60 paying customers. Vendor cost is 57 billable seats at $49, which is $2,793. Three payers have no vendor seat yet. Two internal accounts on the vendor list are not customers.
+
+`weekly_actuals` is empty until TD Bank weekly income, expense, and profit are supplied. The page then draws grouped bars for income and expense and a line for profit.
 
 Do not put a customer price-tier split on the page.

@@ -46,7 +46,7 @@ html:has(#app:not([hidden])){background:#12161c}
 #app .donut-wrap{position:relative}
 #app .kpis,#app .cards,#app .partners,#app .status,#app .split{min-width:0}
 #app .kpis>*,#app .cards>*,#app .partners>*,#app .status>*,#app .split>*{min-width:0}
-#app .chart-box{position:relative;height:320px;width:100%;max-width:100%;min-width:0}
+#app .chart-box{position:relative;height:380px;width:100%;max-width:100%;min-width:0}
 #app .chart-box canvas{position:absolute;left:0;top:0;width:100% !important;height:100% !important}
 #app .chart-box.donut{height:240px}
 #app .chart-box.line{height:250px}
@@ -104,6 +104,7 @@ html:has(#app:not([hidden])){background:#12161c}
 #app .chart-missing{margin:8px 0 0;color:#e0b15c;font-size:.88rem}
 #app .foot{margin:28px 0 0;color:#8d867b;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase}
 #app .loading{color:#c8bfb2;padding:28px 0}
+#app .pending-line{margin:14px 0 4px;color:#e0b15c;font-style:italic}
 @media (max-width:900px){
   #app .kpis{grid-template-columns:1fr 1fr}
   #app .kpi .value{font-size:1.5rem}
@@ -116,7 +117,7 @@ html:has(#app:not([hidden])){background:#12161c}
   #app h1{font-size:1.75rem}
   #app .kpis,#app .cards,#app .partners{grid-template-columns:1fr}
   #app .kpi .value{font-size:2rem}
-  #app .chart-box{height:300px}
+  #app .chart-box{height:420px}
 }
 </style>
 </head>
@@ -459,7 +460,7 @@ function productCardsHTML(data){
         <div><h3>${esc(p.label)}</h3>${detail}</div>
         <span class="badge ${health.tone}">${esc(health.label)}</span>
       </header>
-      <p class="cust"><strong>${esc(p.customers)}</strong> customers</p>
+      <p class="cust"><strong>${esc(p.customers)}</strong> ${esc(p.count_label||"customers")}</p>
       <dl>
         <div><dt>Revenue</dt><dd>${moneyHtml(p.revenue,false)}</dd></div>
         <div><dt>Vendor cost</dt><dd>${moneyHtml(p.vendor_cost,false)}</dd></div>
@@ -499,6 +500,7 @@ function statusHTML(data){
     <div class="status">
       <div>
         <p class="unique"><strong>${esc(unique)}</strong> unique</p>
+        ${data.unique_customer_note?`<p class="lede">${esc(data.unique_customer_note)}</p>`:""}
         <div class="chart-box status" role="img" aria-label="Stacked bar of customer status counts."><canvas id="statusChart"></canvas></div>
         <ul class="legend">${legend}</ul>
         ${mismatch}
@@ -510,6 +512,32 @@ function statusHTML(data){
         ${owedNote?`<p class="note">${esc(owedNote)}</p>`:""}
       </div>
     </div>
+  </section>`;
+}
+function weeklyRows(data){
+  return Array.isArray(data.weekly_actuals)?data.weekly_actuals:[];
+}
+function weeklyReady(rows){
+  return rows.some(r=>r&&[r.income,r.expense,r.profit].some(v=>v!==null&&v!==undefined&&v!==""));
+}
+function weeklyActualsHTML(data){
+  const rows=weeklyRows(data);
+  if(!weeklyReady(rows)){
+    return `<section class="panel" id="weekly-actuals">
+      <p class="kicker">TD Bank</p>
+      <h2>4-week Income / Expense / Profit</h2>
+      <p class="pending-line">TD Bank weekly actuals pending</p>
+    </section>`;
+  }
+  return `<section class="panel" id="weekly-actuals">
+    <p class="kicker">TD Bank</p>
+    <h2>4-week Income / Expense / Profit</h2>
+    <ul class="legend">
+      <li><i class="swatch" style="background:#8eafc4"></i>Income</li>
+      <li><i class="swatch" style="background:#e08b84"></i>Expense</li>
+      <li><i class="swatch" style="background:#c6a46a"></i>Profit</li>
+    </ul>
+    <div class="chart-box line" role="img" aria-label="Grouped bars of weekly income and expense with a profit line."><canvas id="weeklyChart"></canvas></div>
   </section>`;
 }
 function trendHTML(data){
@@ -677,6 +705,31 @@ function paintCharts(data,history,chartsReady){
       }
     }
   }));
+  const actuals=weeklyRows(data).filter(r=>r&&r.week_start);
+  const weeklyCanvas=document.getElementById("weeklyChart");
+  if(weeklyCanvas&&weeklyReady(actuals)){
+    charts.push(new Chart(weeklyCanvas,{
+      type:"bar",
+      data:{
+        labels:actuals.map(r=>formatShort(r.week_start)),
+        datasets:[
+          {type:"bar",label:"Income",data:actuals.map(r=>r.income??null),backgroundColor:"#8eafc4",borderRadius:4,maxBarThickness:28},
+          {type:"bar",label:"Expense",data:actuals.map(r=>r.expense??null),backgroundColor:"#e08b84",borderRadius:4,maxBarThickness:28},
+          {type:"line",label:"Profit",data:actuals.map(r=>r.profit??null),borderColor:"#c6a46a",backgroundColor:"#c6a46a",pointBackgroundColor:"#c6a46a",pointRadius:4,tension:.25,spanGaps:false}
+        ]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        animation:chartAnim(),
+        plugins:{legend:{display:false},tooltip:chartTooltip()},
+        scales:{
+          y:{beginAtZero:true,grid:scaleGrid(),border:{display:false},ticks:{callback:axisMoney,maxTicksLimit:5}},
+          x:{grid:{display:false},border:{display:false}}
+        }
+      }
+    }));
+  }
   const weeks=buildWeeks(data,history);
   charts.push(new Chart(document.getElementById("trendChart"),{
     type:"line",
@@ -752,7 +805,7 @@ async function render(){
     try{await loadChartJs();}catch(e){chartsReady=false;}
     dropCharts();
     document.getElementById("top").innerHTML=headerHTML(current);
-    root.innerHTML=kpisHTML(current)+tieHTML(current)+splitHTML(current)+productChartHTML()+productCardsHTML(current)+statusHTML(current)+trendHTML(current);
+    root.innerHTML=kpisHTML(current)+tieHTML(current)+splitHTML(current)+productChartHTML()+productCardsHTML(current)+statusHTML(current)+trendHTML(current)+weeklyActualsHTML(current);
     const foot=document.getElementById("foot");
     if(foot) foot.textContent=current.company||"";
     try{paintCharts(current,history,chartsReady);}
