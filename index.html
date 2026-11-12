@@ -66,6 +66,7 @@ details .table-wrap{border:0;border-top:1px solid var(--line);border-radius:0 0 
             <th class="num">Customers</th>
             <th class="num">MRR</th>
             <th class="num">Unpaid (3 mo)</th>
+            <th class="num">Profit</th>
           </tr>
         </thead>
         <tbody id="lines"></tbody>
@@ -99,44 +100,74 @@ const DATA = {
       "label": "CRM",
       "customers": 72,
       "mrr": 10553.33,
-      "unpaid": 2150.0
+      "unpaid": 2150.0,
+      "profit_pending": true,
+      "profit_notes": [
+        "GHL Founders Subscription $536.76",
+        "affiliate payouts pending",
+        "before affiliate: $10,016.57"
+      ]
     },
     {
       "id": "sa",
       "label": "Seller Assist",
       "customers": 59,
-      "mrr": 3863.38,
+      "mrr": 3859.93,
       "unpaid": 277.0,
-      "not_billed": 7
+      "not_billed": 7,
+      "not_billed_amount": 553.0,
+      "not_billed_label": "7 not billed \u00b7 $553/mo",
+      "profit": 1066.93,
+      "profit_notes": [
+        "57 seats \u00d7 $49"
+      ]
     },
     {
       "id": "l2l",
       "label": "Listing to Leads",
       "customers": 33,
-      "mrr": 858.38,
+      "mrr": 861.83,
       "unpaid": 0.0,
-      "not_billed": 8
+      "not_billed": 8,
+      "not_billed_amount": 240.0,
+      "not_billed_label": "8 not billed \u00b7 $240/mo",
+      "profit": 111.83
     },
     {
       "id": "ai_employee",
       "label": "AI Employee",
-      "customers": 3,
+      "customers": 19,
       "mrr": 255.0,
-      "unpaid": 0.0
+      "unpaid": 0.0,
+      "customer_notes": [
+        "18 billable"
+      ],
+      "not_billed": 16,
+      "not_billed_amount": 1552.0,
+      "not_billed_label": "16 not billed \u00b7 GHL cost $1,552/mo",
+      "profit": -1561.0,
+      "profit_notes": [
+        "GHL cost $1,816, to confirm"
+      ]
     },
     {
       "id": "lead",
       "label": "Seller Lead Engine",
-      "customers": 14,
+      "customers": 21,
       "mrr": 1870.5,
-      "unpaid": 0.0
+      "unpaid": 0.0,
+      "customer_notes": [
+        "3 free \u00b7 1 paused"
+      ],
+      "profit": 935.25
     },
     {
       "id": "service_plans",
       "label": "Service Plans",
       "customers": 2,
       "mrr": 394.0,
-      "unpaid": 0.0
+      "unpaid": 0.0,
+      "profit": 394.0
     }
   ],
   "arrears": [
@@ -200,7 +231,18 @@ const DATA = {
       "total": 79.0,
       "last_failed": "Sep 26, 2026"
     }
-  ]
+  ],
+  "totals": {
+    "profit_pending": true,
+    "profit_excl_crm": 947.01,
+    "profit_notes": [
+      "excl. CRM: $947.01"
+    ],
+    "sa_billable_seats": 57,
+    "sa_seat_cost": 2793.0,
+    "unique_customers": 100,
+    "unique_customers_label": "unique customers"
+  }
 };
 async function sha256hex(text){
   const enc=new TextEncoder().encode(text);
@@ -259,6 +301,16 @@ function unlock(ev){
   return false;
 }
 function openApp(){document.getElementById("gate").classList.add("hidden");document.getElementById("app").hidden=false;render();}
+function notesHtml(notes){
+  return (notes||[]).map(n=>`<div class="sub">${esc(n)}</div>`).join("");
+}
+function profitCell(s){
+  if(s.profit_pending){
+    return `<td class="num">pending${notesHtml(s.profit_notes)}</td>`;
+  }
+  const neg=Number(s.profit)<0?" risk":"";
+  return `<td class="num${neg}">${usd(s.profit)}${notesHtml(s.profit_notes)}</td>`;
+}
 function render(){
   const d=DATA;
   const lines=d.lines||[];
@@ -270,17 +322,27 @@ function render(){
     const risk=Number(s.unpaid||0)>0?" risk":"";
     return `<tr>
       <td>${esc(s.label)}</td>
-      <td class="num">${esc(s.customers)}${Number(s.not_billed||0)>0?`<div class="sub">${esc(s.not_billed)} not billed</div>`:""}</td>
+      <td class="num">${esc(s.customers)}${(s.customer_notes||[]).map(n=>`<div class="sub">${esc(n)}</div>`).join("")}${s.not_billed_label?`<div class="sub">${esc(s.not_billed_label)}</div>`:(s.not_billed!=null&&s.not_billed!==""?`<div class="sub">${esc(s.not_billed)} not billed</div>`:"")}</td>
       <td class="num">${usd(s.mrr)}</td>
       <td class="num${risk}">${usd(s.unpaid)}</td>
+      ${profitCell(s)}
     </tr>`;
   }).join("");
+  const tot=d.totals||{};
   const totalRisk=unpaid>0?" risk":"";
+  let profitTd;
+  if(tot.profit_pending){
+    profitTd=`<td class="num">pending${notesHtml(tot.profit_notes)}</td>`;
+  } else {
+    const neg=Number(tot.profit)<0?" risk":"";
+    profitTd=`<td class="num${neg}">${usd(tot.profit)}${notesHtml(tot.profit_notes)}</td>`;
+  }
   document.getElementById("totals").innerHTML=`<tr>
     <td>Total</td>
-    <td class="num">${cust}</td>
+    <td class="num">${tot.unique_customers!=null&&tot.unique_customers!==""?esc(tot.unique_customers):esc(cust)}${tot.unique_customers!=null&&tot.unique_customers!==""?`<div class="sub">${esc(tot.unique_customers_label||"unique customers")}</div>`:""}</td>
     <td class="num">${usd(mrr)}</td>
     <td class="num${totalRisk}">${usd(unpaid)}</td>
+    ${profitTd}
   </tr>`;
   const rows=d.arrears||[];
   document.getElementById("arrears").innerHTML=rows.length
