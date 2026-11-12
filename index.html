@@ -139,14 +139,15 @@ const DATA = {
       "customers": 19,
       "mrr": 255.0,
       "unpaid": 0.0,
-      "customer_notes": [
-        "18 billable"
+      "mrr_notes": [
+        "subscriptions only; wallet-funded share not isolable"
       ],
-      "not_billed": 16,
-      "not_billed_amount": 1552.0,
-      "not_billed_label": "16 not billed \u00b7 GHL cost $1,552/mo",
-      "profit": -1561.0,
+      "customer_notes": [
+        "3 billed by subscription \u00b7 15 wallet-funded \u00b7 1 own"
+      ],
+      "profit_pending": true,
       "profit_notes": [
+        "wallet-funded revenue not isolable in Stripe",
         "GHL cost $1,816, to confirm"
       ]
     },
@@ -157,7 +158,7 @@ const DATA = {
       "mrr": 1870.5,
       "unpaid": 0.0,
       "customer_notes": [
-        "3 free \u00b7 1 paused"
+        "3 free \u00b7 1 paused, Tom Murphy"
       ],
       "profit": 935.25
     },
@@ -234,13 +235,14 @@ const DATA = {
   ],
   "totals": {
     "profit_pending": true,
-    "profit_excl_crm": 947.01,
+    "profit_excl_crm": 2508.01,
+    "profit_excl_label": "excl. CRM and AI Employee",
     "profit_notes": [
-      "excl. CRM: $947.01"
+      "excl. CRM and AI Employee: $2,508.01"
     ],
     "sa_billable_seats": 57,
     "sa_seat_cost": 2793.0,
-    "unique_customers": 100,
+    "unique_customers": 99,
     "unique_customers_label": "unique customers"
   }
 };
@@ -323,7 +325,7 @@ function render(){
     return `<tr>
       <td>${esc(s.label)}</td>
       <td class="num">${esc(s.customers)}${(s.customer_notes||[]).map(n=>`<div class="sub">${esc(n)}</div>`).join("")}${s.not_billed_label?`<div class="sub">${esc(s.not_billed_label)}</div>`:(s.not_billed!=null&&s.not_billed!==""?`<div class="sub">${esc(s.not_billed)} not billed</div>`:"")}</td>
-      <td class="num">${usd(s.mrr)}</td>
+      <td class="num">${usd(s.mrr)}${notesHtml(s.mrr_notes)}</td>
       <td class="num${risk}">${usd(s.unpaid)}</td>
       ${profitCell(s)}
     </tr>`;
