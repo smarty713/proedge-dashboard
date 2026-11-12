@@ -28,6 +28,7 @@ td.num,th.num{text-align:right;white-space:nowrap}
 tbody tr:last-child td{border-bottom:0}
 tfoot td{border-bottom:0;border-top:2px solid var(--navy);font-weight:700;background:#eef3f8}
 .risk{color:var(--risk)}
+.sub{display:block;margin-top:2px;font-size:.75rem;font-weight:400;color:var(--muted);white-space:nowrap}
 details{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:0}
 details summary{cursor:pointer;padding:12px 16px;font-weight:600;color:var(--navy);list-style:none}
 details summary::-webkit-details-marker{display:none}
@@ -97,22 +98,24 @@ const DATA = {
       "id": "crm",
       "label": "CRM",
       "customers": 72,
-      "mrr": 11858.33,
+      "mrr": 10553.33,
       "unpaid": 2150.0
     },
     {
       "id": "sa",
       "label": "Seller Assist",
-      "customers": 50,
-      "mrr": 3231.83,
-      "unpaid": 277.0
+      "customers": 59,
+      "mrr": 3863.38,
+      "unpaid": 277.0,
+      "not_billed": 7
     },
     {
       "id": "l2l",
       "label": "Listing to Leads",
-      "customers": 26,
-      "mrr": 300.0,
-      "unpaid": 0.0
+      "customers": 33,
+      "mrr": 858.38,
+      "unpaid": 0.0,
+      "not_billed": 8
     },
     {
       "id": "ai_employee",
@@ -267,7 +270,7 @@ function render(){
     const risk=Number(s.unpaid||0)>0?" risk":"";
     return `<tr>
       <td>${esc(s.label)}</td>
-      <td class="num">${esc(s.customers)}</td>
+      <td class="num">${esc(s.customers)}${Number(s.not_billed||0)>0?`<div class="sub">${esc(s.not_billed)} not billed</div>`:""}</td>
       <td class="num">${usd(s.mrr)}</td>
       <td class="num${risk}">${usd(s.unpaid)}</td>
     </tr>`;
