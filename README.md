@@ -40,7 +40,14 @@ A money field set to `null`, or a profit with `profit_pending: true`, renders as
 | `past_due` | array | `{ "name", "amount", "failed" }`. `failed` is `YYYY-MM-DD` or `null`. |
 | `snapshots` | array of strings | Dates that have a file in `data/history/`. |
 | `unique_customer_note` | string, optional | Shown under the unique-customer count. |
-| `weekly_actuals` | array | TD Bank weeks. Each item is `{ "week_start", "income", "expense", "profit" }`. `week_start` is `YYYY-MM-DD`. Money fields are numbers, or `null` when unknown. An empty array renders the pending state. |
+| `weekly_actuals` | array | TD Bank weeks. Each item is `{ "week_start", "income", "expense", "profit", "distributions" }`. `week_start` is `YYYY-MM-DD`. Money fields are numbers, or `null` when unknown. An empty array renders the pending state. |
+| `weekly_actuals_note` | string, optional | Subtitle under the TD Bank chart. |
+| `kpis.profit_label` | string, optional | Label on the profit card. |
+| `kpis.profit_note` | string, optional | Note under that profit figure. |
+| `kpis.cash_profit` | number, optional | Cash profit for the labeled period. |
+| `kpis.cash_profit_label` | string, optional | Label on the cash-profit card. |
+| `charge_timing` | object, optional | `{ "label", "text" }` shown under the KPI cards. |
+| `split_basis` | string, optional | Label above the partner split. |
 
 ### `split_rule`
 
@@ -95,7 +102,7 @@ Health on the card is derived, not stored. Pending when profit is pending. Loss 
 
 `data/history/YYYY-MM-DD.json` is the `current.json` document as of that date. The month-progress chart reads `as_of`, `kpis.revenue`, and `kpis.profit` from each file named in `snapshots`.
 
-The 4-week Income / Expense / Profit chart reads `weekly_actuals` from `data/current.json` only. Leave that array empty until the TD Bank figures exist. Do not fill it with estimates.
+The 4-week Income / Expense / Profit chart reads `weekly_actuals` from `data/current.json` only. Add a week only when the TD Bank export has those figures. Do not fill a week with estimates.
 
 ### Tie-outs the page computes
 
@@ -105,11 +112,11 @@ The page adds product revenue, known product profit, past-due amounts, and custo
 
 Product customer counts are the counts from the previous dashboard, with the November 12 adjustments below. CRM is one lower because one canceled CRM customer is no longer included.
 
-Unique customers are 98. Robert Weichelt and Jeffery B Jewelers are excluded. Mark States is included (Seller Assist, $82.50/mo). That $82.50 is not added again on top of Seller Assist revenue.
+Unique customers are 97. Robert Weichelt and Jeffery B Jewelers are excluded. Mark States is included (Seller Assist, $82.50/mo). VRG is merged into Cee Rhodes. That $82.50 is not added again on top of Seller Assist revenue.
 
 `$1 SaaS seats` is $9.00 for 9 seats. With that line, product revenue matches the stated total. Its vendor cost and profit are pending.
 
-Customer statuses are paying 86, past due 3, and not billed 9. Those add to 98.
+Customer statuses are paying 85, past due 3, and not billed 9. Those add to 97.
 
 CRM vendor cost is the GHL Founders Subscription from the previous dashboard. It is the amount left after affiliate payouts are taken out of CRM revenue to reach CRM profit.
 
@@ -121,6 +128,6 @@ AI Employee profit and vendor cost are pending. An unconfirmed cost in the previ
 
 Seller Assist has 60 paying customers. Vendor cost is 57 billable seats at $49, which is $2,793. Three payers have no vendor seat yet. Two internal accounts on the vendor list are not customers.
 
-`weekly_actuals` is empty until TD Bank weekly income, expense, and profit are supplied. The page then draws grouped bars for income and expense and a line for profit.
+`weekly_actuals` holds TD Bank weeks with `week_start`, `income`, `expense`, `profit`, and `distributions`. The chart draws income and expense as grouped bars and profit as a line. Distributions render on a separate row labeled Transfers to CK (unconfirmed). The week of Nov 9 is not in the file.
 
 Do not put a customer price-tier split on the page.

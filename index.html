@@ -31,7 +31,15 @@ html:has(#app:not([hidden])){background:#12161c}
 #app .asof{margin:0;border:1px solid rgba(198,164,106,.5);color:#e6d3ae;border-radius:999px;padding:8px 14px;font-size:.85rem;white-space:nowrap}
 #app .kicker{margin:0 0 4px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#c6a46a}
 #app .lede{margin:8px 0 0;color:#c8bfb2;font-size:.92rem;max-width:68ch}
-#app .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+#app .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:22px}
+#app .kpis .kpi:nth-child(-n+3){grid-column:span 2}
+#app .kpis .kpi:nth-child(n+4){grid-column:span 3}
+#app .mini{margin:14px 0 0;color:#c8bfb2;font-size:.92rem}
+#app .mini strong{color:#e6d3ae;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;margin-right:8px}
+#app .xfer{margin-top:16px;overflow-x:auto}
+#app .xfer table{width:100%;border-collapse:collapse;font-size:.85rem;color:#a39b8d}
+#app .xfer th,#app .xfer td{text-align:right;padding:8px 10px;border-bottom:1px solid rgba(243,239,230,.08);font-weight:500;white-space:nowrap}
+#app .xfer th:first-child{text-align:left;color:#c8bfb2;font-weight:500}
 #app .kpi{background:rgba(26,31,39,.94);border:1px solid rgba(243,239,230,.10);border-radius:16px;padding:16px 16px 14px;min-height:128px}
 #app .kpi .label{margin:0;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#c8bfb2}
 #app .kpi .value,#app .partner .value,#app .due .amt,#app .pcard dd{font-variant-numeric:tabular-nums}
@@ -39,6 +47,8 @@ html:has(#app:not([hidden])){background:#12161c}
 #app .kpi .hint{margin:8px 0 0;color:#c8bfb2;font-size:.8rem}
 #app .kpi.owed{background:linear-gradient(180deg,rgba(224,177,92,.10),rgba(26,31,39,.94) 46%)}
 #app .kpi.owed .value{color:#f0c27a}
+#app .kpi.cash{background:linear-gradient(180deg,rgba(143,191,163,.10),rgba(26,31,39,.94) 46%)}
+#app .kpi.cash .value{color:#b7d7c4}
 #app .note{margin:14px 0 0;padding:10px 12px;border-left:2px solid rgba(198,164,106,.75);color:#d9d0c2;font-size:.9rem}
 #app .panel{margin-top:22px;background:#1a1f27;border:1px solid rgba(243,239,230,.10);border-radius:18px;padding:18px 18px 16px}
 #app .block{margin-top:22px}
@@ -107,6 +117,7 @@ html:has(#app:not([hidden])){background:#12161c}
 #app .pending-line{margin:14px 0 4px;color:#e0b15c;font-style:italic}
 @media (max-width:900px){
   #app .kpis{grid-template-columns:1fr 1fr}
+  #app .kpis .kpi{grid-column:auto}
   #app .kpi .value{font-size:1.5rem}
   #app .split,#app .status{grid-template-columns:1fr}
   #app .cards{grid-template-columns:1fr 1fr}
@@ -116,6 +127,7 @@ html:has(#app:not([hidden])){background:#12161c}
   #app .top{flex-direction:column;align-items:flex-start}
   #app h1{font-size:1.75rem}
   #app .kpis,#app .cards,#app .partners{grid-template-columns:1fr}
+  #app .kpis .kpi{grid-column:auto}
   #app .kpi .value{font-size:2rem}
   #app .chart-box{height:420px}
 }
@@ -347,15 +359,20 @@ function kpisHTML(data){
   const pending=pendingLabels(data);
   let profitHint="After affiliate payouts.";
   if(pending.length) profitHint+=" Excludes "+pending.join(", ")+" (pending).";
+  if(k.profit_note) profitHint=k.profit_note;
   const owedHint=((data.past_due||[]).length)+" past due";
+  const cash=k.cash_profit===null||k.cash_profit===undefined?"":`<article class="kpi cash" data-kpi="cash"><p class="label">${esc(k.cash_profit_label||"Cash profit")}</p><p class="value">${esc(usd(k.cash_profit))}</p></article>`;
+  const timing=data.charge_timing&&data.charge_timing.text?`<p class="mini"><strong>${esc(data.charge_timing.label||"Charge timing")}</strong> ${esc(data.charge_timing.text)}</p>`:""
   return `<section>
     <p class="kicker">${esc(monthProgress(data.as_of).label+" "+monthProgress(data.as_of).year)}</p>
     <div class="kpis">
       <article class="kpi" data-kpi="revenue"><p class="label">Total revenue</p><p class="value">${esc(usd(k.revenue))}</p></article>
-      <article class="kpi" data-kpi="profit"><p class="label">Total profit</p><p class="value">${esc(usd(k.profit))}</p><p class="hint">${esc(profitHint)}</p></article>
+      <article class="kpi" data-kpi="profit"><p class="label">${esc(k.profit_label||"Total profit")}</p><p class="value">${esc(usd(k.profit))}</p><p class="hint">${esc(profitHint)}</p></article>
+      ${cash}
       <article class="kpi" data-kpi="affiliate"><p class="label">Affiliate payouts</p><p class="value">${esc(usd(k.affiliate_payouts))}</p><p class="hint">${esc(k.affiliate_note||"")}</p></article>
       <article class="kpi owed" data-kpi="owed"><p class="label">Owed</p><p class="value">${esc(usd(k.owed))}</p><p class="hint">${esc(owedHint)}</p></article>
     </div>
+    ${timing}
   </section>`;
 }
 function tieHTML(data){
@@ -413,13 +430,13 @@ function splitHTML(data){
   const bar=segs.map(s=>`<span style="flex:${Number(s.amount)} ${Number(s.amount)} 0;background:${s.color}"></span>`).join("");
   const key=segs.map(s=>`<li><i class="swatch" style="background:${s.color}"></i>${esc(s.label)} ${esc(usd(s.amount))}</li>`).join("");
   return `<section class="panel" id="split">
-    <p class="kicker">Partners</p>
+    <p class="kicker">${esc(data.split_basis||"Partners")}</p>
     <h2>Partner split</h2>
     <p class="lede">The base is paid first. What remains is split. Nothing carries into the next month.</p>
     <div class="split">
       <div class="donut-wrap">
         <div class="chart-box donut"><canvas id="splitChart"></canvas></div>
-        <div class="donut-center"><span>Profit</span><strong>${esc(usd(data.split.profit))}</strong></div>
+        <div class="donut-center"><span>${esc((data.split&&data.split.center_label)||"Profit")}</span><strong>${esc(usd(data.split.profit))}</strong></div>
       </div>
       <div class="partners">${cards}</div>
     </div>
@@ -529,15 +546,20 @@ function weeklyActualsHTML(data){
       <p class="pending-line">TD Bank weekly actuals pending</p>
     </section>`;
   }
+  const note=data.weekly_actuals_note?`<p class="lede">${esc(data.weekly_actuals_note)}</p>`:"";
+  const transfers=rows.filter(r=>r&&r.distributions!==null&&r.distributions!==undefined&&r.distributions!=="");
+  const transferRow=transfers.length?`<div class="xfer"><table><thead><tr><th></th>${transfers.map(r=>`<th>${esc(formatShort(r.week_start))}</th>`).join("")}</tr></thead><tbody><tr><th>Transfers to CK (unconfirmed)</th>${transfers.map(r=>`<td>${esc(usd(r.distributions))}</td>`).join("")}</tr></tbody></table></div>`:"";
   return `<section class="panel" id="weekly-actuals">
     <p class="kicker">TD Bank</p>
     <h2>4-week Income / Expense / Profit</h2>
+    ${note}
     <ul class="legend">
       <li><i class="swatch" style="background:#8eafc4"></i>Income</li>
       <li><i class="swatch" style="background:#e08b84"></i>Expense</li>
       <li><i class="swatch" style="background:#c6a46a"></i>Profit</li>
     </ul>
     <div class="chart-box line" role="img" aria-label="Grouped bars of weekly income and expense with a profit line."><canvas id="weeklyChart"></canvas></div>
+    ${transferRow}
   </section>`;
 }
 function trendHTML(data){

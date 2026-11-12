@@ -15,12 +15,22 @@
   "kpis": {
     "revenue": 17580.16,
     "profit": 11414.54,
+    "profit_label": "Subscription run-rate profit (monthly)",
+    "profit_note": "Not cash. Excludes GHL wallet/usage, VA payroll, software, bank fees.",
+    "cash_profit": 12302.39,
+    "cash_profit_label": "October cash profit (TD actual)",
     "affiliate_payouts": 886.61,
     "affiliate_note": "Comes out of CRM",
     "owed": 675
   },
+  "charge_timing": {
+    "label": "Charge timing",
+    "text": "51% of charges days 1-15, 49% days 16-31 (Oct actual)"
+  },
+  "split_basis": "Based on subscription run-rate",
   "split": {
     "profit": 11414.54,
+    "center_label": "Run-rate",
     "base": 4000,
     "remainder": 7414.54,
     "shares": {
@@ -104,10 +114,10 @@
       "note": "9 seats × $1."
     }
   ],
-  "unique_customers": 98,
-  "unique_customer_note": "Excludes Robert Weichelt and Jeffery B Jewelers. Includes Mark States (Seller Assist, $82.50/mo).",
+  "unique_customers": 97,
+  "unique_customer_note": "Excludes Robert Weichelt and Jeffery B Jewelers. Includes Mark States (Seller Assist, $82.50/mo). VRG merged into Cee Rhodes.",
   "customer_status": [
-    {"id": "paying", "label": "Paying", "count": 86},
+    {"id": "paying", "label": "Paying", "count": 85},
     {"id": "past_due", "label": "Past due", "count": 3},
     {"id": "not_billed", "label": "Not billed", "count": 9}
   ],
@@ -116,6 +126,12 @@
     {"name": "Krautbauer", "amount": 248, "failed": "2026-11-11"},
     {"name": "Guerrero", "amount": 209, "failed": null}
   ],
-  "weekly_actuals": [],
+  "weekly_actuals_note": "TD Bank actuals; week of Nov 9 pending (export ends Nov 9)",
+  "weekly_actuals": [
+    {"week_start": "2026-10-12", "income": 8854.31, "expense": 4933.81, "profit": 3920.50, "distributions": 2300.00},
+    {"week_start": "2026-10-19", "income": 7137.20, "expense": 3346.56, "profit": 3790.64, "distributions": 2500.00},
+    {"week_start": "2026-10-26", "income": 6335.10, "expense": 2232.87, "profit": 4102.23, "distributions": 4000.00},
+    {"week_start": "2026-11-02", "income": 5476.53, "expense": 5015.12, "profit": 461.41, "distributions": 2250.00}
+  ],
   "snapshots": ["2026-11-12"]
 }
