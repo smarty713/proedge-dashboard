@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SP Smart Business Solutions LLC — Business health dashboard</title>
+<style>
+:root{--navy:#1F4E79;--navy-dark:#0F3A5F;--ink:#1a2330;--muted:#5b6775;--line:#d0d5dd;--bg:#f4f6f8;--card:#fff;--warn:#8a5a00;--warn-bg:#fff6d9;--risk:#8b1e1e;--ok:#1e5a32}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:15px;line-height:1.45}
+#gate{position:fixed;inset:0;background:var(--navy-dark);color:#fff;display:flex;align-items:center;justify-content:center;z-index:20;padding:24px}
+#gate.hidden{display:none}
+.gate-box{width:min(420px,100%);background:#0c2d4a;padding:28px;border-radius:12px}
+.gate-box h1{font-size:1.15rem;margin:0 0 8px}
+.gate-box p{color:#c9d7e6;font-size:.85rem;margin:0 0 16px}
+.gate-box input{width:100%;padding:10px 12px;border:1px solid #3a5d7a;border-radius:8px;background:#082238;color:#fff;font-size:1rem}
+.gate-box button{margin-top:12px;width:100%;padding:10px 12px;border:0;border-radius:8px;background:#4ea3e0;color:#072033;font-weight:700;cursor:pointer}
+.gate-error{color:#ffb4b4;font-size:.85rem;margin-top:8px;min-height:1.2em}
+header{background:var(--navy-dark);color:#fff;padding:20px 24px 18px}
+header h1{margin:0 0 6px;font-size:1.25rem}
+header .meta{color:#c9d7e6;font-size:.85rem}
+.wrap{padding:16px;max-width:1200px;margin:0 auto}
+.banner{background:var(--warn-bg);color:var(--warn);border:1px solid #ead7a0;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card h2{margin:0 0 4px;font-size:1.05rem;color:var(--navy)}
+.src{font-size:.75rem;color:var(--muted);margin:6px 0 10px}
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.metric{background:#f7f9fb;border-radius:8px;padding:8px}
+.metric .k{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.metric .v{font-size:1.15rem;font-weight:700;color:var(--navy-dark)}
+.metric.risk .v{color:var(--risk)}
+.note{background:#eef2f6;border-left:4px solid var(--navy);padding:8px 10px;margin-top:8px;font-size:.85rem}
+details{margin-top:8px;font-size:.85rem}
+details summary{cursor:pointer;color:var(--navy)}
+.small{font-size:.8rem;color:var(--muted)}
+h3{margin:22px 0 8px;color:var(--navy-dark);font-size:1.1rem}
+table{width:100%;border-collapse:collapse;background:var(--card);font-size:.85rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--navy);color:#fff;font-weight:600}
+tr:nth-child(even) td{background:#f7f9fb}
+.money{white-space:nowrap;font-variant-numeric:tabular-nums}
+footer{padding:16px;font-size:.75rem;color:var(--muted);max-width:1200px;margin:0 auto}
+.pill{display:inline-block;background:var(--warn-bg);color:var(--warn);border-radius:999px;padding:1px 8px;font-size:.7rem;font-weight:700}
+@media (max-width:640px){.metrics{grid-template-columns:1fr}header{padding:16px}.wrap{padding:10px}}
+</style>
+</head>
+<body>
+<div id="gate">
+  <form class="gate-box" onsubmit="return unlock(event)">
+    <h1>SP Smart Business Solutions LLC</h1>
+    <p>Business health dashboard (weekly snapshot). Enter the passcode to view. This is light client-side protection only, not real access control.</p>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Passcode" autofocus>
+    <button type="submit">Open dashboard</button>
+    <div class="gate-error" id="gate-err"></div>
+  </form>
+</div>
+<div id="app" hidden>
+  <header>
+    <h1>SP Smart Business Solutions LLC — Business health dashboard</h1>
+    <div class="meta" id="header-meta"></div>
+  </header>
+  <div class="wrap">
+    <div class="banner" id="banner"></div>
+    <div class="grid" id="sections"></div>
+    <div id="dollar1" style="margin-top:12px"></div>
+    <h3>Customers with failed plans (last 3 months, no later success)</h3>
+    <p class="small" id="failed-intro"></p>
+    <div style="overflow:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Product</th>
+            <th>Plan / period</th>
+            <th>Amount owed</th>
+            <th>Monthly amount at risk</th>
+            <th>Last failure (ET)</th>
+          </tr>
+        </thead>
+        <tbody id="failed-body"></tbody>
+      </table>
+    </div>
+    <h3>Figures that could not be sourced</h3>
+    <ul id="unsourced" class="small"></ul>
+  </div>
+  <footer id="footer"></footer>
+</div>
+<script>
+const PWHASH = "0f2cb44170f42cc966535f392a10dcd4499426df69dc476f1bf36609f7fa8c1e";
+const DATA = {
+  "title": "SP Smart Business Solutions LLC \u2014 Business health dashboard",
+  "version": "1.1",
+  "refresh": "weekly",
+  "as_of": "November 11, 2026, 2:30 PM America/New_York",
+  "as_of_iso": "2026-11-11T14:30:34.085998-05:00",
+  "timezone": "America/New_York",
+  "account": "acct_1Oz0mOExZ4v4AJs5",
+  "read_only": true,
+  "notes": [
+    "Weekly snapshot. Stripe is truth for customer-level data (matched on name). TD is truth for aggregates and for amounts paid to GHL.",
+    "Failed-payment rule: last 3 months only (Aug 10\u2013Nov 10, 2026, America/New_York). A customer who failed then succeeded in that period is not at risk. Failed with no later success is at risk.",
+    "Bill Bexley and Noel Kennedy were removed from the at-risk / failed list (Smarty Nov 11).",
+    "CRM is one combined product line. $1 BPO seats and partner $1 rebill accounts are a separate small line, not full paying customers.",
+    "MRR at risk is the current monthly amount for at-risk customers, counted once per person per product. Catch-up amounts owed are listed on the failed-plans table and are not treated as MRR.",
+    "Owed total on the failed-plans list is $2,437 after removing Bill Bexley and Noel Kennedy, from the last-3-months failed-payments workbook.",
+    "Seller Assist and Listing to Leads cards show Stripe collected vs TD vendor paid (iList / Pro Edge Offers, and LISTINGSTOLEADS). November vendor bills are not in TD through Nov 9; November Stripe collected is partial through Nov 8, 2:31 PM ET.",
+    "Seller Lead Engine includes the India partner payout line (PAYPAL IPROSERVICE) from TD: principals by month, January through Nov 9, and the last three full months (August\u2013October). Same-day INTL fees are listed separately and are not added into the payout total.",
+    "Seller Lead Engine headline MRR uses Smarty\u2019s confirmed rates (eXp partners at $64.50, including Sharon Yeary). Stripe-billed MRR is shown alongside because Sharon is still billed $129 in Stripe. Free seats and Tom Murphy\u2019s paused seat are listed separately and are not in paying MRR. The paused seat is $0 MRR and is not at risk.",
+    "AI Employee official MRR is Andy Lugo $60 (mapped to the $59 plan), Rob Dietrich $97 and Bryan Messick $98 (mapped to the $99 plan), at billed amounts, no rounding. The $20 plan has 0 subscriptions."
+  ],
+  "sections": [
+    {
+      "id": "crm",
+      "label": "CRM",
+      "mapping_needed": false,
+      "total_customers": 72,
+      "total_mrr": 11858.33,
+      "mrr_at_risk": 974.0,
+      "customers_at_risk": 5,
+      "as_of": "November 11, 2026, 2:30 PM America/New_York",
+      "data_source": "Weekly snapshot. Stripe subscription items as of 2026-11-08T10:59:20-05:00 (America/New_York), same 192 current subscriptions as the Nov 9 live-subscription export. Customer-level figures are from Stripe, matched on name. MRR uses monthly_recurring_actual_terms (annual prices already converted). Seller Lead Engine half-price seats use the paid invoice amount $64.50. Bundle dollars stay on the billed product; other covered products get a customer count, not a dollar split. Free eXp seats, Tom Kelly / Direct One, Chris DiCristo own line, Felicia, Noel Kennedy, and Smarty-marked free accounts are excluded. CRM is one combined line. Sources: crm-business-audit/subscription-items.csv and crm-growth-2026-11-09/stripe_live_subs_2026-11-09.csv. Total CRMs breakdown is on this card: Paying; BPO official 71 vs live $1 Stripe seats; Chris/partner-billed $1 (Valianti, Sharkey); eXp team agents from the who-owes classification; Tom Kelly separate.",
+      "excluded_note": "1 people with a current CRM subscription were excluded (free eXp seats, Tom Kelly, own accounts, or Smarty-marked free).",
+      "crm_breakdown": {
+        "title": "Total CRMs",
+        "note": "Breakdown of every CRM category that is sourced. These lines are not added together into one headcount, because a person can appear in more than one descriptive group (for example an eXp agent who also has a $1 marker). Paying MRR stays its own number. CRM remains one combined line.",
+        "paying": {
+          "customers": 72,
+          "mrr": 11858.33,
+          "source": "Stripe current subscriptions (Nov 8 items / Nov 9 live-sub snapshot), after excluding free eXp CRM seats, Tom Kelly / Direct One, Chris DiCristo own line, Felicia, Noel Kennedy, and Smarty-marked free accounts."
+        },
+        "bpo": {
+          "official_count_smarty": 71,
+          "official_source": "Smarty\u2019s official BPO count of 71 (who-owes / prior rulings).",
+          "live_1_dollar_seats_stripe": {
+            "subscriptions": 44,
+            "unique_customers": 43,
+            "source": "Current ProEdge SAAS Plan $1 subscriptions in the Nov 8\u20139 Stripe snapshot, before dropping eXp names from the $1 line.",
+            "of_which": "Includes Vy Trinh and Amanda Farley (eXp), Philip T Valianti and Kevin Sharkey (partner-billed / Chris-billed), Ken Riebert ($1 plan, leave as is), and the remaining $1 markers. Rob Minton has two $1 subscriptions (43 unique customers, 44 subscription rows)."
+          },
+          "live_1_dollar_after_excluding_exp": {
+            "unique_customers": 41,
+            "mrr": 42.0,
+            "source": "Same Stripe $1 seats after excluding free eXp accounts (Vy Trinh, Amanda Farley) from this line, as on the separate $1 seats card."
+          }
+        },
+        "chris_partner_billed": {
+          "one_dollar_rebill_customers_sourced": 2,
+          "names": [
+            "Philip T Valianti",
+            "Kevin Sharkey"
+          ],
+          "source": "Who-owes classification: Valianti and Sharkey are Chris-billed / partner $1 rebill accounts, and both have a current $1 SAAS Plan in Stripe.",
+          "chris_dicristo": "Chris DiCristo (ceo@loormax.com, cus_SrRgJaLZCfLHin) is not a $1 seat. He has a current ProEdge CRM for Lenders subscription at $199 and is classified as an own / Loormax line, excluded from the paying CRM count. Not sourced as a $1 rebill account."
+        },
+        "exp_team_agents": {
+          "named_agents": 8,
+          "business_accounts": 2,
+          "names_agents": [
+            "Vy Trinh",
+            "Michelle Kossey",
+            "James Fleming",
+            "Debbie Kalfas",
+            "Tom Micheletti",
+            "Dan Dawson",
+            "Amanda Farley",
+            "Sharon Yeary"
+          ],
+          "names_business": [
+            "CREDO Group Capital",
+            "Empower Home Solutions"
+          ],
+          "source": "Who-owes-what eXp-team classification (Smarty Nov 10). These 8 agents plus 2 eXp-team business accounts are excluded from paying CRM. Not all have a current CRM subscription in Stripe (several have Lead Engine, Seller Assist, or a $1 marker only, or no current sub)."
+        },
+        "tom_kelly": {
+          "note": "Tom Kelly / Direct One stays separate and is out of the paying CRM count. Partner, does not pay.",
+          "source": "Who-owes classification and Smarty rulings."
+        }
+      }
+    },
+    {
+      "id": "l2l",
+      "label": "Listing to Leads",
+      "mapping_needed": false,
+      "total_customers": 26,
+      "total_mrr": 300.0,
+      "mrr_at_risk": 0.0,
+      "customers_at_risk": 0,
+      "as_of": "November 11, 2026, 2:30 PM America/New_York",
+      "data_source": "Weekly snapshot. Stripe subscription items as of 2026-11-08T10:59:20-05:00 (America/New_York), same 192 current subscriptions as the Nov 9 live-subscription export. Customer-level figures are from Stripe, matched on name. MRR uses monthly_recurring_actual_terms (annual prices already converted). Seller Lead Engine half-price seats use the paid invoice amount $64.50. Bundle dollars stay on the billed product; other covered products get a customer count, not a dollar split. Free eXp seats, Tom Kelly / Direct One, Chris DiCristo own line, Felicia, Noel Kennedy, and Smarty-marked free accounts are excluded. CRM is one combined line. Standalone Listing to Leads dollars are billed here. L2L+Falcon / Premier / $208 coverage counts as a customer; those dollars stay on the billed product.",
+      "excluded_note": null,
+      "vendor_comparison": {
+        "label": "Stripe collected vs Listing to Leads vendor paid (TD)",
+        "collected_definition": "Stripe collections on standalone Listing to Leads only. L2L+Falcon bundle dollars stay on Seller Assist and are not repeated here.",
+        "paid_definition": "TD LISTINGSTOLEADS debits, $750.00 each month January\u2013October 2026. TD is truth for payouts. November is not in the file through Nov 9 (typically posts around the 20th).",
+        "jan_oct": {
+          "collected": 3869.0,
+          "paid": 7500.0,
+          "months": [
+            {
+              "month": "2026-01",
+              "collected": 400.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-02",
+              "collected": 380.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-03",
+              "collected": 430.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-04",
+              "collected": 400.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-05",
+              "collected": 400.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-06",
+              "collected": 280.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-07",
+              "collected": 330.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-08",
+              "collected": 370.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-09",
+              "collected": 400.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-10",
+              "collected": 479.0,
+              "paid": 750.0
+            }
+          ]
+        },
+        "aug_oct": {
+          "collected": 1249.0,
+          "paid": 2250.0,
+          "months": [
+            {
+              "month": "2026-08",
+              "collected": 370.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-09",
+              "collected": 400.0,
+              "paid": 750.0
+            },
+            {
+              "month": "2026-10",
+              "collected": 479.0,
+              "paid": 750.0
+            }
+          ]
+        },
+        "november": {
+          "collected_partial_through_nov8": 40.0,
+          "paid": null,
+          "note": "November L2L vendor bill is not in TD through Nov 9 (expected around Nov 20). Stripe collected for November is partial (extract ends Nov 8, 2:31 PM ET)."
+        },
+        "sources": "Collected: receipt-line-attribution.csv, standalone Listing to Leads only. Paid: TD-To-Date-Nov9-2026.csv."
+      }
+    },
+    {
+      "id": "sa",
+      "label": "Seller Assist",
+      "mapping_needed": false,
+      "total_customers": 50,
+      "total_mrr": 3231.83,
+      "mrr_at_risk": 238.0,
+      "customers_at_risk": 2,
+      "as_of": "November 11, 2026, 2:30 PM America/New_York",
+      "data_source": "Weekly snapshot. Stripe subscription items as of 2026-11-08T10:59:20-05:00 (America/New_York), same 192 current subscriptions as the Nov 9 live-subscription export. Customer-level figures are from Stripe, matched on name. MRR uses monthly_recurring_actual_terms (annual prices already converted). Seller Lead Engine half-price seats use the paid invoice amount $64.50. Bundle dollars stay on the billed product; other covered products get a customer count, not a dollar split. Free eXp seats, Tom Kelly / Direct One, Chris DiCristo own line, Felicia, Noel Kennedy, and Smarty-marked free accounts are excluded. CRM is one combined line. Cash Offer / iList and L2L+Falcon (and MBP+L2L+Falcon) dollars are billed here. Advanced, Premier, and the $208 plan count as Seller Assist customers; those dollars stay on CRM. iBuyer Offers is not Seller Assist.",
+      "excluded_note": "2 people with a current Seller Assist subscription were excluded (free eXp seats, Tom Kelly, own accounts, or Smarty-marked free).",
+      "vendor_comparison": {
+        "label": "Stripe collected vs iList / Pro Edge Offers paid (TD)",
+        "collected_definition": "Stripe collections on Cash Offer / iList and on L2L+Falcon (and MBP+L2L+Falcon) bundles, whose dollars stay on Seller Assist. Premier and Advanced collections stay on CRM and are not included here.",
+        "paid_definition": "TD Visa debits classified ILIST / PRO EDGE OFFERS, account 4434378215. TD is truth for payouts. November is not in the file through Nov 9.",
+        "jan_oct": {
+          "collected": 22240.0,
+          "paid": 28131.8,
+          "months": [
+            {
+              "month": "2026-01",
+              "collected": 1047.0,
+              "paid": 2795.0
+            },
+            {
+              "month": "2026-02",
+              "collected": 1107.0,
+              "paid": 2794.8
+            },
+            {
+              "month": "2026-03",
+              "collected": 2464.0,
+              "paid": 2748.0
+            },
+            {
+              "month": "2026-04",
+              "collected": 2185.0,
+              "paid": 2758.6
+            },
+            {
+              "month": "2026-05",
+              "collected": 2264.0,
+              "paid": 2968.8
+            },
+            {
+              "month": "2026-06",
+              "collected": 2137.0,
+              "paid": 2917.0
+            },
+            {
+              "month": "2026-07",
+              "collected": 2323.0,
+              "paid": 2845.0
+            },
+            {
+              "month": "2026-08",
+              "collected": 2582.0,
+              "paid": 2745.0
+            },
+            {
+              "month": "2026-09",
+              "collected": 2818.0,
+              "paid": 2849.6
+            },
+            {
+              "month": "2026-10",
+              "collected": 3313.0,
+              "paid": 2710.0
+            }
+          ]
+        },
+        "aug_oct": {
+          "collected": 8713.0,
+          "paid": 8304.6,
+          "months": [
+            {
+              "month": "2026-08",
+              "collected": 2582.0,
+              "paid": 2745.0
+            },
+            {
+              "month": "2026-09",
+              "collected": 2818.0,
+              "paid": 2849.6
+            },
+            {
+              "month": "2026-10",
+              "collected": 3313.0,
+              "paid": 2710.0
+            }
+          ]
+        },
+        "november": {
+          "collected_partial_through_nov8": 623.0,
+          "paid": null,
+          "note": "November iList / Pro Edge Offers bill is not in TD through Nov 9. Stripe collected for November is partial (collections extract ends Nov 8, 2:31 PM ET)."
+        },
+        "sources": "Collected: crm-business-audit/collections/outputs/receipt-line-attribution.csv. Paid: TD-To-Date-Nov9-2026.csv / who-owes vendor tab.",
+        "mbp_l2l_bundle_not_in_totals": {
+          "jan_oct": 420.0,
+          "aug_oct": 110.0,
+          "november_partial_through_nov8": 0.0,
+          "note": "ProEdge MBP+L2L Bundle (Mailbox Power + Listing to Leads, no Falcon) collections are not added into the Seller Assist or Listing to Leads collected totals. Component dollars are not inferable from the invoice, so this is shown separately rather than guessed."
+        }
+      }
+    },
+    {
+      "id": "ai_employee",
+      "label": "AI Employee",
+      "mapping_needed": false,
+      "total_customers": 3,
+      "total_mrr": 255.0,
+      "mrr_at_risk": 0.0,
+      "customers_at_risk": 0,
+      "as_of": "November 11, 2026, 2:30 PM America/New_York",
+      "data_source": "Product prod_RCUuyjhB7NIHhf, AI Employee. Official plans per Smarty Nov 11: $20 (new), $59, and $99. The $20 plan has 0 subscriptions, which is expected for a brand-new plan (no Stripe $20 price found yet). There is no Stripe price at exactly $59; the mid tier bills at $60 in Stripe (GHL charges $59, Smarty adds $1, per Smarty Nov 11). Rob Dietrich (price_1QK5uu, billed $97) and Bryan Messick (price_1TLsjK, billed $98) are mapped to the official $99 plan; MRR uses the Stripe-billed amounts $97 and $98 and is not rounded to $99. Official MRR is $255.00 for 3 customers. Andy Lugo\u2019s price_1UMCFw ($60) is mapped to the $59 plan per Smarty Nov 11 (GHL $59 + $1). The $100 price (no current sub) stays unmapped.",
+      "official_plans": [
+        {
+          "name": "$20 / month (new)",
+          "current_customers": 0,
+          "current_mrr": 0.0,
+          "note": "Brand new. 0 subscriptions is correct. No Stripe price at $20 was found in the snapshot."
+        },
+        {
+          "name": "$59 / month (bills $60 in Stripe)",
+          "current_customers": 1,
+          "current_mrr": 60.0,
+          "note": "Mapped from Andy Lugo\u2019s Stripe $60 price per Smarty Nov 11 (GHL charges $59, Smarty adds $1). Billed amount kept."
+        },
+        {
+          "name": "$99 / month",
+          "current_customers": 2,
+          "current_mrr": 195.0,
+          "note": "Mapped from Stripe-billed $97 (Rob Dietrich) and $98 (Bryan Messick). Amounts are not rounded."
+        }
+      ],
+      "official_99_mapped": [
+        {
+          "name": "Andy Lugo | Real Estate + Home Loans",
+          "price_id": "price_1UMCFwExZ4v4AJs5eCAHGIR7",
+          "billed_amount": 60.0,
+          "mapped_to": "official $59 plan (GHL $59 + $1 added; bills $60)",
+          "current_customers": 1,
+          "status": "active"
+        },
+        {
+          "name": "Rob Dietrich - eXp Realty",
+          "price_id": "price_1QK5uuExZ4v4AJs554CAaKTu",
+          "billed_amount": 97.0,
+          "mapped_to": "official $99 plan",
+          "current_customers": 1,
+          "status": "active"
+        },
+        {
+          "name": "Bryan Messick",
+          "price_id": "price_1TLsjKExZ4v4AJs5wdigSJIT",
+          "billed_amount": 98.0,
+          "mapped_to": "official $99 plan",
+          "current_customers": 1,
+          "status": "active"
+        }
+      ],
+      "no_59_plan_found": true,
+      "unmapped_prices": [
+        {
+          "price_id": "price_1ResmHExZ4v4AJs57NQO43Sw",
+          "product_id": "prod_RCUuyjhB7NIHhf",
+          "unit_amount": 100.0,
+          "interval": "month",
+          "current_customers": 0,
+          "names": "",
+          "note": "No current subscription. Left unmapped; amount was not rounded or assigned to a named plan."
+        }
+      ],
+      "plans_verified": []
+    },
+    {
+      "id": "lead",
+      "label": "Seller Lead Engine",
+      "mapping_needed": false,
+      "total_customers": 14,
+      "total_mrr": 1870.5,
+      "mrr_at_risk": 0.0,
+      "customers_at_risk": 0,
+      "as_of": "November 11, 2026, 2:30 PM America/New_York",
+      "data_source": "ProEdge Listing Engine (prod_UIX5erywFPll0J, price_1TKcy9ExZ4v4AJs5yP5snElp), list $129. Paying MRR uses Smarty\u2019s confirmed rates from the Seller Lead Engine COGS workbook: eXp partners Tom Micheletti, Lisa Flannigan, and Sharon Yeary at $64.50; everyone else at $129. Free seats (Smarty, Tom Kelly, Kelby Contreras) and the paused seat (Tom Murphy) are shown separately and are not in paying MRR. Sharon Yeary is still billed $129 in Stripe (invoices through Oct 29 have no 50% coupon). Headline MRR is the Smarty-rate figure $1,870.50; Stripe-billed MRR alongside is $1,935.00.",
+      "excluded_note": null,
+      "mrr_smarty_rate": 1870.5,
+      "mrr_stripe_billed": 1935.0,
+      "paying_customers": 14,
+      "paying_seats": 16,
+      "free_seats": {
+        "count": 3,
+        "people": [
+          "Smarty (John Smart / SP Smart Business Solutions)",
+          "Tom Kelly (Direct One)",
+          "Kelby Contreras"
+        ],
+        "note": "Free seats are not in paying MRR and have no Listing Engine subscription in Stripe, as expected. Source: Seller Lead Engine COGS workbook, Smarty Nov 10."
+      },
+      "paused_seats": {
+        "count": 1,
+        "people": [
+          {
+            "name": "Tom Murphy",
+            "email": "tom@donnaandtom.com",
+            "customer_id": "cus_QuP6C0SHQJ3Mpj",
+            "subscription_id": "sub_1USeTYExZ4v4AJs5FADVIJeZ",
+            "stripe_status": "active",
+            "pause_collection_behavior": "keep_as_draft",
+            "resumes_at": null,
+            "list_price": 129.0,
+            "mrr": 0.0,
+            "note": "Paused while he finishes setup (no counties selected yet, so no leads). Verified on the live subscription: pause_collection is set (behavior keep_as_draft), no resume date. Stripe status is still active. $0 MRR while paused; not at risk; not on the failed-plans list."
+          }
+        ],
+        "note": "Paused seats are $0 MRR, not at risk, and not on the failed-plans list. They are not in paying customers or paying MRR. Tom Murphy\u2019s Listing Engine subscription was verified live in Stripe on Nov 11, 2026: status is active, but pause_collection is set (behavior keep_as_draft) with no resume date."
+      },
+      "seat_total": 20,
+      "people_total": 18,
+      "seat_total_including_free": 20,
+      "customer_total_including_free": 18,
+      "count_gap": "Reconciliation vs Smarty\u2019s 21: 16 paying seats + 3 free (Smarty, Tom Kelly, Kelby Contreras) + 1 paused (Tom Murphy) = 20 seats, 1 short of 21. People: 14 paying customers + 3 free + 1 paused = 18, 3 short of 21 unique users. Brian Beck\u2019s and John Boyce\u2019s second seats are counted as seats, not extra people. Tom Murphy was already in the prior 17 Stripe paying seats (the Nov 8\u20139 snapshot had his Listing Engine sub as active, and pause_collection is not on that extract). Moving him from paying to paused does not add a 21st seat. The remaining missing user is not identified in Stripe on this product.",
+      "mrr_basis_note": "Headline MRR is Smarty\u2019s confirmed rate ($1,870.50 = 13 full seats at $129 + 3 half-price seats at $64.50). Stripe-billed MRR is $1,935.00 because Sharon Yeary is still billed $129 in Stripe. Difference $64.50 is Sharon\u2019s half-vs-full gap. Tom Murphy\u2019s paused seat is $0 and is not in either MRR figure.",
+      "partner_payout": {
+        "label": "India partner payout (PAYPAL IPROSERVICE)",
+        "payee": "PAYPAL IPROSERVICE (PayPal id x0305, international, location code S GP)",
+        "note": "Confirmed in the Seller Lead Engine COGS work as India partner payouts against Listing Engine. TD is truth. Principals only are in the payout totals below. Same-day INTL transaction fees (3%) totaled $67.73 across the five payments; whether those fees belong in COGS or as a bank/FX fee is still unanswered, so they are listed separately and not added into the payout total. No IPROSERVICE debit in TD from January through June, or in November through Nov 9.",
+        "jan_through_nov9_principal": 2257.5,
+        "intl_fees_separate": 67.73,
+        "monthly": [
+          {
+            "month": "2026-01",
+            "principal": 0.0,
+            "intl_fee_separate": 0.0,
+            "count": 0
+          },
+          {
+            "month": "2026-02",
+            "principal": 0.0,
+            "intl_fee_separate": 0.0,
+            "count": 0
+          },
+          {
+            "month": "2026-03",
+            "principal": 0.0,
+            "intl_fee_separate": 0.0,
+            "count": 0
+          },
+          {
+            "month": "2026-04",
+            "principal": 0.0,
+            "intl_fee_separate": 0.0,
+            "count": 0
+          },
+          {
+            "month": "2026-05",
+            "principal": 0.0,
+            "intl_fee_separate": 0.0,
+            "count": 0
+          },
+          {
+            "month": "2026-06",
+            "principal": 0.0,
+            "intl_fee_separate": 0.0,
+            "count": 0
+          },
+          {
+            "month": "2026-07",
+            "principal": 774.0,
+            "intl_fee_separate": 23.22,
+            "count": 2
+          },
+          {
+            "month": "2026-08",
+            "principal": 387.0,
+            "intl_fee_separate": 11.61,
+            "count": 1
+          },
+          {
+            "month": "2026-09",
+            "principal": 451.5,
+            "intl_fee_separate": 13.55,
+            "count": 1
+          },
+          {
+            "month": "2026-10",
+            "principal": 645.0,
+            "intl_fee_separate": 19.35,
+            "count": 1
+          },
+          {
+            "month": "2026-11 (through Nov 9)",
+            "principal": 0.0,
+            "intl_fee_separate": 0.0,
+            "count": 0
+          }
+        ],
+        "aug_oct_principal": 1483.5,
+        "november_through_nov9": 0.0,
+        "stripe_collected_same_windows": {
+          "jan_oct": 7869.0,
+          "aug_oct": 3999.0,
+          "november_partial_through_nov8": 451.5,
+          "note": "Listing Engine Stripe collections from the same receipt-attribution extract (through Nov 8, 2:31 PM ET). The COGS workbook also recorded $580.50 collected Nov 1\u20139 after adding Brian Beck\u2019s Nov 9 $129 invoice; that later $129 is not in the Nov 8 extract."
+        },
+        "source": "/workspace/trueups/full-2026/TD-To-Date-Nov9-2026.csv and the Seller Lead Engine COGS workbook."
+      }
+    },
+    {
+      "id": "service_plans",
+      "label": "Service Plans",
+      "mapping_needed": false,
+      "total_customers": 2,
+      "total_mrr": 394.0,
+      "mrr_at_risk": 0.0,
+      "customers_at_risk": 0,
+      "as_of": "November 11, 2026, 2:30 PM America/New_York",
+      "data_source": "Weekly snapshot. Stripe subscription items as of 2026-11-08T10:59:20-05:00 (America/New_York), same 192 current subscriptions as the Nov 9 live-subscription export. Customer-level figures are from Stripe, matched on name. MRR uses monthly_recurring_actual_terms (annual prices already converted). Seller Lead Engine half-price seats use the paid invoice amount $64.50. Bundle dollars stay on the billed product; other covered products get a customer count, not a dollar split. Free eXp seats, Tom Kelly / Direct One, Chris DiCristo own line, Felicia, Noel Kennedy, and Smarty-marked free accounts are excluded. CRM is one combined line. Mapped to Seller Offer Engine Starter and Seller Offer Engine Pro. Amounts were verified on Stripe invoice lines, not taken from memory.",
+      "excluded_note": null,
+      "plans_verified": [
+        {
+          "name": "Seller Offer Engine Starter",
+          "product_id": "prod_VNcOCYhRBYDzHk",
+          "price_id": "price_1UMrCqExZ4v4AJs5Sm6WV9FH",
+          "verified_amount": 197.0,
+          "interval": "month",
+          "current_customers": 2,
+          "current_mrr": 394.0,
+          "note": "Verified on paid invoice lines: Seller Offer Engine Starter (at $197.00 / month). Current customers: Brian Beck (bbeck12001@gmail.com, cus_QCFOHab4SBLUAm) and Hedilson Vieira (eddyvieirapa@gmail.com, cus_UJjgW0smWoWhRq). Smarty said only Brian and Eddy are on the new services. Hedilson\u2019s Stripe email is eddyvieirapa@gmail.com; no other Stripe customer is named Eddy. They are the same person by name and email (one customer id), both on Starter, not Pro."
+        },
+        {
+          "name": "Seller Offer Engine Pro",
+          "product_id": "prod_VNcQa9mNJ9FqAR",
+          "price_id": "price_1UMrC3ExZ4v4AJs55kveXfCp",
+          "verified_amount": 349.0,
+          "interval": "month",
+          "current_customers": 0,
+          "current_mrr": 0.0,
+          "note": "Verified on paid invoice in_1UQ4Tp (Oct 13, 2026, Brian Beck) at $349.00 / month. As of the Nov 8\u20139 snapshot, that same subscription (sub_1UQ4Tp) is on Starter at $197, not Pro. No current Pro subscriptions. Jeanne DeSanctis had a Starter subscription that was canceled the same day (Oct 27) and is not current."
+        }
+      ],
+      "one_time": {
+        "note": "One-time sales, not MRR. Stripe descriptions found: CRM Performance Audit ($99), AI Launch ($397), and combined invoices ($496 and $449). The $449 combined invoices are not split here. Extract of collections goes through Nov 8, 2026, 2:31 PM ET. No product named Concierge was found. In November (through Nov 8): 1 payment(s), 99.00 total. Since August in this extract: 16 payments, $3,726.00.",
+        "rows": [
+          {
+            "when": "2026-09-29T11:01:05-04:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Kelby Contreras"
+          },
+          {
+            "when": "2026-09-30T13:56:38-04:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Andrew Teasdale"
+          },
+          {
+            "when": "2026-10-01T11:11:49-04:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Robb Krautbauer"
+          },
+          {
+            "when": "2026-10-04T11:22:44-04:00",
+            "description": "ProEdge AI Accelerator\u2122 Light Setup",
+            "amount": 449.0,
+            "name": "Hedilson Vieira"
+          },
+          {
+            "when": "2026-10-13T08:07:42-04:00",
+            "description": "CRM Audit + AI Launch",
+            "amount": 449.0,
+            "name": "Brian Beck"
+          },
+          {
+            "when": "2026-10-15T07:37:08-04:00",
+            "description": "CRM Performance Audit\u2122 $99+ AI Launch\u2122 $397",
+            "amount": 496.0,
+            "name": "Sandy Margolin"
+          },
+          {
+            "when": "2026-10-19T08:18:40-04:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Tom Murphy"
+          },
+          {
+            "when": "2026-10-21T16:01:19-04:00",
+            "description": "AI Launch\u2122",
+            "amount": 397.0,
+            "name": "Dick Carr"
+          },
+          {
+            "when": "2026-10-22T09:50:00-04:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Andrew Texidor"
+          },
+          {
+            "when": "2026-10-26T08:31:04-04:00",
+            "description": "CRM Performance Audit\u2122 & AI Launch\u2122",
+            "amount": 496.0,
+            "name": "Francine Carstensen"
+          },
+          {
+            "when": "2026-10-27T08:22:24-04:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Ryan Michael"
+          },
+          {
+            "when": "2026-10-27T11:07:02-04:00",
+            "description": "ProEdge AI Accelerator\u2122 Light Audit and AI launch",
+            "amount": 449.0,
+            "name": "Jeanne DeSanctis"
+          },
+          {
+            "when": "2026-10-29T07:37:56-04:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Juanita Simkins"
+          },
+          {
+            "when": "2026-10-30T08:24:05-04:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Tom Micheletti"
+          },
+          {
+            "when": "2026-10-30T12:07:17-04:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Mike Giancanelli"
+          },
+          {
+            "when": "2026-11-03T14:13:50-05:00",
+            "description": "CRM Performance Audit\u2122",
+            "amount": 99.0,
+            "name": "Oscar Garcia"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ghl_rebilling",
+      "label": "GHL Rebilling",
+      "mapping_needed": false,
+      "partial": true,
+      "total_customers": null,
+      "total_mrr": null,
+      "mrr_at_risk": null,
+      "as_of": "November 11, 2026, 2:30 PM America/New_York",
+      "data_source": "Current month only. Wallet usage lags recharges: a recharge is prepaid credit, not the same as usage consumed in the month. November usage is not yet on a HighLevel usage tax invoice. Stripe is truth for collected; TD is truth for paid. Collected source: /workspace/crm-business-audit/collections/outputs/receipt-line-attribution.csv (category GHL_wallet_recharge_collected_not_consumed), confirmed against collected-month-category-product-price.csv ($2,001.66). Paid source: /workspace/trueups/full-2026/td-highlevel-jan1-nov9-classified.csv and /workspace/trueups/full-2026/TD-To-Date-Nov9-2026.csv, account 4434378215. Wallet-recharge classes only.",
+      "current_month": {
+        "month": "2026-11",
+        "partial_label": "Partial month",
+        "collected": 2001.66,
+        "collected_through": "Nov 8, 2026, 2:31 PM America/New_York",
+        "paid": 2970.35,
+        "paid_through": "Nov 9, 2026 (TD-To-Date-Nov9-2026.csv)",
+        "difference": -968.69,
+        "difference_note": "Collected and paid end on different days. Stripe collections extract ends Nov 8, 2:31 PM ET; TD paid includes Nov 9 ($750.00 in $250 wallet recharges). Do not treat this difference as a full-month result.",
+        "matched_window": {
+          "label": "Nov 1\u20138, 2026 (the overlapping window)",
+          "collected": 2001.66,
+          "paid": 2220.35,
+          "difference": -218.69
+        },
+        "paid_nov9_only": 750.0,
+        "collected_by_day": [
+          {
+            "date": "2026-11-01",
+            "amount": 159.0
+          },
+          {
+            "date": "2026-11-02",
+            "amount": 310.52
+          },
+          {
+            "date": "2026-11-03",
+            "amount": 215.02
+          },
+          {
+            "date": "2026-11-04",
+            "amount": 297.35
+          },
+          {
+            "date": "2026-11-05",
+            "amount": 180.67
+          },
+          {
+            "date": "2026-11-06",
+            "amount": 528.7
+          },
+          {
+            "date": "2026-11-07",
+            "amount": 188.73
+          },
+          {
+            "date": "2026-11-08",
+            "amount": 121.67
+          }
+        ],
+        "excluded_from_paid": [
+          {
+            "label": "HighLevel AI Employee bill (not a wallet recharge)",
+            "amount": 1926.85
+          },
+          {
+            "label": "HighLevel card add-on (not a wallet recharge)",
+            "amount": 104.77
+          }
+        ],
+        "note": "Current month only. Wallet usage lags recharges: a recharge is prepaid credit, not the same as usage consumed in the month. November usage is not yet on a HighLevel usage tax invoice. Stripe is truth for collected; TD is truth for paid.",
+        "sources": {
+          "collected": "/workspace/crm-business-audit/collections/outputs/receipt-line-attribution.csv (category GHL_wallet_recharge_collected_not_consumed), confirmed against collected-month-category-product-price.csv ($2,001.66).",
+          "paid": "/workspace/trueups/full-2026/td-highlevel-jan1-nov9-classified.csv and /workspace/trueups/full-2026/TD-To-Date-Nov9-2026.csv, account 4434378215. Wallet-recharge classes only."
+        }
+      }
+    }
+  ],
+  "dollar1_seats": {
+    "label": "BPO $1 seats and partner $1 rebill accounts",
+    "total_customers": 41,
+    "total_mrr": 42.0,
+    "mrr_at_risk": 9.0,
+    "customers_at_risk": 9,
+    "as_of": "November 11, 2026, 2:30 PM America/New_York",
+    "data_source": "Stripe product ProEdge SAAS Plan (prod_T35dQBCPJ6kLc2) at $1/month. Counted separately from full paying customers. Free eXp accounts on a $1 marker are excluded from this line."
+  },
+  "failed_plans": {
+    "window": "Aug 10, 2026 12:00 AM ET through Nov 10, 2026 11:59 PM ET",
+    "source": "/workspace/SP-Smart-Business-Solutions-LLC-Failed-Payments-Owed-Last-3-Months-Nov2026.xlsx",
+    "owed_total": 2437.0,
+    "owed_total_note": "After removing Bill Bexley ($418) and Noel Kennedy ($504) from the workbook total of $3,359. Expected $2,437.",
+    "row_count": 22,
+    "customer_count": 19,
+    "rows": [
+      {
+        "name": "Jeffery Bolling",
+        "email": "jeff@jefferyb.com",
+        "product": "CRM",
+        "plan": "CRM catch-up, June-July-Aug-Sept (one-off)",
+        "amount_owed": 796.0,
+        "mrr_at_risk": 0.0,
+        "mrr_note": "No current monthly amount attributed (one-off catch-up or no current subscription on this product). Amount owed is listed; it is not treated as MRR.",
+        "last_failure_et": "Sep 29, 2026, 2:50 PM ET",
+        "invoice_or_payment_id": "(no invoice; pi_3UL66mExZ4v4AJs50hbtit5a)",
+        "billing_period": "June through September 2026 CRM (one-off catch-up). Failed Sep 29, 2026, 2:50 PM ET."
+      },
+      {
+        "name": "Andrea Leassear",
+        "email": "andrea@boutiquehtx.com",
+        "product": "CRM",
+        "plan": "CRM + Falcon (one-off catch-up; amount not split)",
+        "amount_owed": 278.0,
+        "mrr_at_risk": 378.0,
+        "mrr_note": "Current monthly amount on this product (from the Stripe subscription snapshot).",
+        "last_failure_et": "Sep 21, 2026, 8:35 PM ET",
+        "invoice_or_payment_id": "(no invoice; pi_3UIHg6ExZ4v4AJs50uqZQTv2)",
+        "billing_period": "One-off catch-up charge (no Stripe invoice). Failed Sep 21, 2026, 8:35 PM ET."
+      },
+      {
+        "name": "Robert Weichelt",
+        "email": "robert@robertweichelt.com",
+        "product": "CRM",
+        "plan": "ProEdge AI-Powered CRM",
+        "amount_owed": 199.0,
+        "mrr_at_risk": 199.0,
+        "mrr_note": "Current monthly amount on this product (from the Stripe subscription snapshot).",
+        "last_failure_et": "Aug 26, 2026, 6:29 PM ET",
+        "invoice_or_payment_id": "in_1U3jhNExZ4v4AJs56uMNYEEc",
+        "billing_period": "Aug 12, 2026, 5:28 PM ET to Sep 12, 2026, 5:28 PM ET"
+      },
+      {
+        "name": "Victor Ruelas Ochoa",
+        "email": "victorlvhomes33@gmail.com",
+        "product": "CRM",
+        "plan": "ProEdge AI-Powered CRM",
+        "amount_owed": 199.0,
+        "mrr_at_risk": 199.0,
+        "mrr_note": "Current monthly amount on this product (from the Stripe subscription snapshot).",
+        "last_failure_et": "Nov 8, 2026, 6:20 PM ET",
+        "invoice_or_payment_id": "in_1UXM5YExZ4v4AJs5PQhCfdk3",
+        "billing_period": "Nov 2, 2026, 9:19 AM ET to Dec 2, 2026, 9:19 AM ET"
+      },
+      {
+        "name": "Mike Giancanelli",
+        "email": "mike@sierraht.com",
+        "product": "CRM",
+        "plan": "July and August CRM (one-off catch-up)",
+        "amount_owed": 198.0,
+        "mrr_at_risk": 99.0,
+        "mrr_note": "Current monthly amount on this product (from the Stripe subscription snapshot).",
+        "last_failure_et": "Sep 15, 2026, 12:10 AM ET",
+        "invoice_or_payment_id": "(no invoice; pi_3UFnhXExZ4v4AJs51hjUhHqS)",
+        "billing_period": "July and August 2026 CRM (one-off catch-up). Failed Sep 15, 2026, 12:10 AM ET."
+      },
+      {
+        "name": "Kevin Lane",
+        "email": "kevinsells757@gmail.com",
+        "product": "CRM",
+        "plan": "August Payment CRM+Falcon (one-off catch-up; amount not split)",
+        "amount_owed": 183.0,
+        "mrr_at_risk": 99.0,
+        "mrr_note": "Current monthly amount on this product (from the Stripe subscription snapshot).",
+        "last_failure_et": "Sep 15, 2026, 12:32 AM ET",
+        "invoice_or_payment_id": "(no invoice; pi_3UFo2lExZ4v4AJs51vSZJTOa)",
+        "billing_period": "August 2026 CRM+Falcon (one-off catch-up). Failed Sep 15, 2026, 12:32 AM ET."
+      },
+      {
+        "name": "Jason DeLong",
+        "email": "jason@kcheartlandhomes.com",
+        "product": "Seller Assist",
+        "plan": "L2L+Falcon bundle (July catch-up; amount not split)",
+        "amount_owed": 119.0,
+        "mrr_at_risk": 119.0,
+        "mrr_note": "Current monthly amount on this product (from the Stripe subscription snapshot).",
+        "last_failure_et": "Sep 28, 2026, 2:16 PM ET",
+        "invoice_or_payment_id": "(no invoice; pi_3UKj69ExZ4v4AJs50oenlxFy)",
+        "billing_period": "July 2026 Falcon/L2L (one-off catch-up). Failed Sep 28, 2026, 2:16 PM ET."
+      },
+      {
+        "name": "Camille Haynes",
+        "email": "camille@camillehaynes.com",
+        "product": "CRM",
+        "plan": "ProEdge OS CRMV2 - Legacy",
+        "amount_owed": 99.0,
+        "mrr_at_risk": 0.0,
+        "mrr_note": "No current monthly amount attributed (one-off catch-up or no current subscription on this product). Amount owed is listed; it is not treated as MRR.",
+        "last_failure_et": "Sep 4, 2026, 11:01 AM ET",
+        "invoice_or_payment_id": "in_1U6szdExZ4v4AJs5Mux2Bmg4",
+        "billing_period": "Aug 21, 2026, 9:59 AM ET to Sep 21, 2026, 9:59 AM ET"
+      },
+      {
+        "name": "Camille Haynes",
+        "email": "camille@camillehaynes.com",
+        "product": "CRM",
+        "plan": "June CRM period (open invoice; evidenced by the $198.00 catch-up)",
+        "amount_owed": 99.0,
+        "mrr_at_risk": 0.0,
+        "mrr_note": "Same person\u2019s monthly amount already counted once for this product (additional unpaid period is in amount owed only).",
+        "last_failure_et": "Sep 21, 2026, 2:25 PM ET",
+        "invoice_or_payment_id": "in_1TnnZuExZ4v4AJs57D1pb2n5",
+        "billing_period": "June 2026 CRM period. Stripe invoice in_1TnnZuExZ4v4AJs57D1pb2n5 is still open. Failed payment in the window is the Sep 21 catch-up, not a June invoice retry.",
+        "_section": "crm"
+      },
+      {
+        "name": "Tesla Realty Group / Pay Zero Real Estate Team",
+        "email": "njhomehunter@gmail.com",
+        "product": "CRM",
+        "plan": "ProEdge CRM for Realtors - 99 Plan",
+        "amount_owed": 99.0,
+        "mrr_at_risk": 0.0,
+        "mrr_note": "No current monthly amount attributed (one-off catch-up or no current subscription on this product). Amount owed is listed; it is not treated as MRR.",
+        "last_failure_et": "Oct 17, 2026, 7:35 PM ET",
+        "invoice_or_payment_id": "in_1UMbViExZ4v4AJs5YOIU4r6o",
+        "billing_period": "Oct 3, 2026, 6:34 PM ET to Nov 3, 2026, 5:34 PM ET"
+      },
+      {
+        "name": "Andrea Leassear",
+        "email": "andrea@boutiquehtx.com",
+        "product": "Seller Assist",
+        "plan": "ProEdge Cash Offer Platform, Powered by iList",
+        "amount_owed": 79.0,
+        "mrr_at_risk": 119.0,
+        "mrr_note": "Current monthly amount on this product (from the Stripe subscription snapshot).",
+        "last_failure_et": "Sep 21, 2026, 9:55 AM ET",
+        "invoice_or_payment_id": "in_1UI6khExZ4v4AJs5Oo7whY1n",
+        "billing_period": "Sep 21, 2026, 8:54 AM ET to Oct 21, 2026, 8:54 AM ET"
+      },
+      {
+        "name": "Cathy Ryan",
+        "email": "cathyryan.exp@gmail.com",
+        "product": "Seller Assist",
+        "plan": "ProEdge Cash Offer Platform, Powered by iList",
+        "amount_owed": 79.0,
+        "mrr_at_risk": 0.0,
+        "mrr_note": "No current monthly amount attributed (one-off catch-up or no current subscription on this product). Amount owed is listed; it is not treated as MRR.",
+        "last_failure_et": "Sep 26, 2026, 9:13 AM ET",
+        "invoice_or_payment_id": "in_1UEpn6ExZ4v4AJs5InPO05qx",
+        "billing_period": "Sep 12, 2026, 8:11 AM ET to Oct 12, 2026, 8:11 AM ET"
+      },
+      {
+        "name": "Brian Droze",
+        "email": "brian@briandrozerrealter1.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 1.0,
+        "mrr_note": "BPO / partner $1 seat (failed with no later success).",
+        "last_failure_et": "Aug 23, 2026, 3:16 PM ET",
+        "invoice_or_payment_id": "in_1U2bFrExZ4v4AJs5Tn8XOFjo",
+        "billing_period": "Aug 9, 2026, 2:14 PM ET to Sep 9, 2026, 2:14 PM ET"
+      },
+      {
+        "name": "Christina Johnson",
+        "email": "cjsellingsandiego@gmail.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 1.0,
+        "mrr_note": "Current $1 seat monthly amount.",
+        "last_failure_et": "Nov 9, 2026, 11:07 AM ET",
+        "invoice_or_payment_id": "in_1UZu8FExZ4v4AJs519EzXjvy",
+        "billing_period": "Nov 9, 2026, 10:04 AM ET to Dec 9, 2026, 10:04 AM ET"
+      },
+      {
+        "name": "Christina Johnson",
+        "email": "cjsellingsandiego@gmail.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 0.0,
+        "mrr_note": "Same person\u2019s monthly amount already counted once for this product (additional unpaid period is in amount owed only).",
+        "last_failure_et": "Oct 9, 2026, 12:06 PM ET",
+        "invoice_or_payment_id": "in_1UOfM3ExZ4v4AJs5EI0VbviY",
+        "billing_period": "Oct 9, 2026, 11:04 AM ET to Nov 9, 2026, 10:04 AM ET",
+        "_section": "dollar1"
+      },
+      {
+        "name": "Jason Smith",
+        "email": "jason.m.smith@exprealty.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 1.0,
+        "mrr_note": "BPO / partner $1 seat (failed with no later success).",
+        "last_failure_et": "Aug 15, 2026, 1:02 PM ET",
+        "invoice_or_payment_id": "in_1TzfLUExZ4v4AJs5kcoCLMch",
+        "billing_period": "Aug 1, 2026, 12:00 PM ET to Sep 1, 2026, 12:00 PM ET"
+      },
+      {
+        "name": "Jayla Ehrler",
+        "email": "jaylaehrlerbpo@gmail.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 1.0,
+        "mrr_note": "BPO / partner $1 seat (failed with no later success).",
+        "last_failure_et": "Sep 18, 2026, 2:37 PM ET",
+        "invoice_or_payment_id": "in_1UC11fExZ4v4AJs5hgjMnLvP",
+        "billing_period": "Sep 4, 2026, 1:35 PM ET to Oct 4, 2026, 1:35 PM ET"
+      },
+      {
+        "name": "Jayme Hutchins",
+        "email": "dizme@icloud.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 1.0,
+        "mrr_note": "Current $1 seat monthly amount.",
+        "last_failure_et": "Nov 8, 2026, 6:05 PM ET",
+        "invoice_or_payment_id": "in_1UYzvTExZ4v4AJs5KDt0zRzP",
+        "billing_period": "Nov 6, 2026, 10:03 PM ET to Dec 6, 2026, 10:03 PM ET"
+      },
+      {
+        "name": "Kevin Sharkey",
+        "email": "sharkrealtyadvisors@gmail.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 1.0,
+        "mrr_note": "Current $1 seat monthly amount.",
+        "last_failure_et": "Oct 14, 2026, 9:14 PM ET",
+        "invoice_or_payment_id": "in_1UQcJDExZ4v4AJs55rO0mn7y",
+        "billing_period": "Oct 14, 2026, 8:07 PM ET to Nov 14, 2026, 7:07 PM ET"
+      },
+      {
+        "name": "Lorienny Rodriguez Santiago",
+        "email": "lorionerealtor@gmail.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 1.0,
+        "mrr_note": "BPO / partner $1 seat (failed with no later success).",
+        "last_failure_et": "Sep 15, 2026, 2:58 PM ET",
+        "invoice_or_payment_id": "in_1UAvw7ExZ4v4AJs56Nb2MFjD",
+        "billing_period": "Sep 1, 2026, 1:57 PM ET to Oct 1, 2026, 1:57 PM ET"
+      },
+      {
+        "name": "Pamela Jackson",
+        "email": "pamdjackson@yahoo.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 1.0,
+        "mrr_note": "Current $1 seat monthly amount.",
+        "last_failure_et": "Nov 1, 2026, 4:19 PM ET",
+        "invoice_or_payment_id": "in_1UX5CcExZ4v4AJs5VftD22eA",
+        "billing_period": "Nov 1, 2026, 3:17 PM ET to Dec 1, 2026, 3:17 PM ET"
+      },
+      {
+        "name": "Raymon Danna",
+        "email": "dannaraymon@gmail.com",
+        "product": "BPO / partner $1 seat",
+        "plan": "ProEdge SAAS Plan (BPO $1 account)",
+        "amount_owed": 1.0,
+        "mrr_at_risk": 1.0,
+        "mrr_note": "BPO / partner $1 seat (failed with no later success).",
+        "last_failure_et": "Sep 22, 2026, 7:15 PM ET",
+        "invoice_or_payment_id": "in_1UIbx3ExZ4v4AJs5ZAr4WxbH",
+        "billing_period": "Sep 22, 2026, 6:13 PM ET to Oct 22, 2026, 6:13 PM ET"
+      }
+    ]
+  },
+  "unsourced_figures": [
+    "November 2026 iList / Pro Edge Offers vendor bill \u2014 not in TD through Nov 9. January\u2013November vendor total cannot be completed.",
+    "November 2026 Listing to Leads vendor bill \u2014 not in TD through Nov 9 (typically posts around the 20th).",
+    "November 2026 IPROSERVICE India partner payout \u2014 not in TD through Nov 9.",
+    "AI Employee $20 plan \u2014 no Stripe price found yet (0 subscriptions is expected for a new plan).",
+    "AI Employee $59 plan \u2014 mapped to Andy Lugo\u2019s $60 Stripe price per Smarty Nov 11 (GHL $59 + $1). No exact $59 price exists in Stripe.",
+    "Stripe GHL rebill collections after Nov 8, 2026, 2:31 PM ET \u2014 the collections extract ends then, while TD paid is through Nov 9.",
+    "Seller Offer Engine Pro \u2014 price verified at $349, but there is no current Pro subscription (0 customers, $0 MRR).",
+    "Seller Lead Engine: 16 paying seats + 3 free + 1 paused (Tom Murphy) = 20 seats, still 1 short of Smarty\u2019s 21; 14 paying customers + 3 free + 1 paused = 18 unique people, still 3 short of 21. Tom Murphy was already in the prior 17 Stripe seats; moving him to paused does not add a 21st seat. The remaining missing user is not identified in Stripe.",
+    "A product or price literally named Concierge was not found. One-time Audit / AI Launch charges are listed under Service Plans and are not MRR.",
+    "INTL 3% fees on IPROSERVICE payments ($67.73) \u2014 whether they belong in partner COGS or as a bank/FX fee is still unanswered."
+  ],
+  "other_found_not_in_a_section": [
+    {
+      "what": "ProEdge iBuyer Offers current subscriptions",
+      "detail": "3 current, $280.50 monthly. iBuyer Offers is not Seller Assist and is not placed in a section."
+    },
+    {
+      "what": "Other current unmapped Stripe subscriptions",
+      "detail": "Andrea Leassear ProEdge SaaS - No New Sub $100.00. Not placed in a section."
+    }
+  ]
+};
+async function sha256hex(text){
+  const enc=new TextEncoder().encode(text);
+  if(window.crypto&&window.crypto.subtle){
+    const buf=await window.crypto.subtle.digest("SHA-256",enc);
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+  }
+  return sha256fallback(text);
+}
+function sha256fallback(ascii){
+  function rotr(x,n){return (x>>>n)|(x<<(32-n));}
+  const K=[1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952999808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298];
+  function toWords(s){
+    const bytes=[];
+    for(let i=0;i<s.length;i++) bytes.push(s.charCodeAt(i)&0xff);
+    const bitLen=bytes.length*8;
+    bytes.push(0x80);
+    while((bytes.length%64)!==56) bytes.push(0);
+    for(let i=7;i>=0;i--) bytes.push((bitLen/Math.pow(2,i*8))&0xff);
+    const w=[];
+    for(let i=0;i<bytes.length;i+=4) w.push(((bytes[i]<<24)|(bytes[i+1]<<16)|(bytes[i+2]<<8)|bytes[i+3])>>>0);
+    return w;
+  }
+  let h=[1779033703,3144134277,1013904242,2773480762,1359893119,2600822924,528734635,1541459225];
+  const words=toWords(unescape(encodeURIComponent(ascii)));
+  for(let i=0;i<words.length;i+=16){
+    const w=words.slice(i,i+16);
+    for(let t=16;t<64;t++){
+      const s0=rotr(w[t-15],7)^rotr(w[t-15],18)^(w[t-15]>>>3);
+      const s1=rotr(w[t-2],17)^rotr(w[t-2],19)^(w[t-2]>>>10);
+      w[t]=(w[t-16]+s0+w[t-7]+s1)>>>0;
+    }
+    let [a,b,c,d,e,f,g,hh]=h;
+    for(let t=0;t<64;t++){
+      const S1=rotr(e,6)^rotr(e,11)^rotr(e,25);
+      const ch=(e&f)^(~e&g);
+      const t1=(hh+S1+ch+K[t]+w[t])>>>0;
+      const S0=rotr(a,2)^rotr(a,13)^rotr(a,22);
+      const maj=(a&b)^(a&c)^(b&c);
+      const t2=(S0+maj)>>>0;
+      hh=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;
+    }
+    h=h.map((x,i)=>(x+[a,b,c,d,e,f,g,hh][i])>>>0);
+  }
+  return h.map(x=>("00000000"+x.toString(16)).slice(-8)).join("");
+}
+function usd(n){if(n===null||n===undefined)return "—";return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(n);}
+function esc(s){return String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));}
+function unlock(ev){
+  ev.preventDefault();
+  const val=document.getElementById("pw").value||"";
+  sha256hex(val).then(h=>{
+    if(h===PWHASH){sessionStorage.setItem("sbs_dash_ok","1");openApp();}
+    else document.getElementById("gate-err").textContent="That passcode does not match.";
+  });
+  return false;
+}
+function openApp(){document.getElementById("gate").classList.add("hidden");document.getElementById("app").hidden=false;render();}
+function render(){
+  const d=DATA;
+  document.getElementById("header-meta").textContent="Weekly snapshot · Version "+(d.version||"1.1")+" · As of "+d.as_of+" · Stripe "+d.account+" · Read-only";
+  document.getElementById("banner").textContent="Failed-payment window: "+d.failed_plans.window+". A customer who failed then succeeded in that period is not at risk. Bill Bexley and Noel Kennedy are not on the failed list. CRM is one combined line. $1 seats are listed separately. Vendor payouts use TD through Nov 9. Refresh weekly.";
+  const root=document.getElementById("sections");
+  root.innerHTML="";
+  d.sections.forEach(s=>{
+    const card=document.createElement("div");
+    card.className="card";
+    let metrics="", extra="";
+    if(s.id==="ghl_rebilling"){
+      const g=s.current_month||{};
+      metrics=`<div class="metrics">
+        <div class="metric"><div class="k">Collected (Stripe)</div><div class="v">${usd(g.collected)}</div></div>
+        <div class="metric"><div class="k">Paid to GHL (TD)</div><div class="v">${usd(g.paid)}</div></div>
+        <div class="metric risk"><div class="k">Difference</div><div class="v">${usd(g.difference)}</div></div>
+      </div>`;
+      extra=`<div class="src">${esc(s.data_source)}</div>`;
+      if(g.partial_label) extra+=`<div class="note"><strong>${esc(g.partial_label)}</strong> ${esc(g.note||"")}</div>`;
+      if(g.matched_window) extra+=`<p class="small">Overlapping window ${esc(g.matched_window.label)}: collected ${usd(g.matched_window.collected)}, paid ${usd(g.matched_window.paid)}, difference ${usd(g.matched_window.difference)}.</p>`;
+      if(g.excluded_from_paid&&g.excluded_from_paid.length){
+        extra+="<details><summary>Not included in paid (not wallet recharges)</summary><ul>"+g.excluded_from_paid.map(x=>`<li>${esc(x.label)}: ${usd(x.amount)}</li>`).join("")+"</ul></details>";
+      }
+    } else if(s.mapping_needed){
+      metrics=`<div class="metrics">
+        <div class="metric"><div class="k">Customers</div><div class="v">—</div></div>
+        <div class="metric"><div class="k">Total MRR</div><div class="v">—</div></div>
+        <div class="metric risk"><div class="k">MRR at risk</div><div class="v">—</div></div>
+      </div>`;
+      extra=`<div class="note"><strong>Mapping needed.</strong> ${esc(s.data_source)}</div>`;
+    } else {
+      metrics=`<div class="metrics">
+        <div class="metric"><div class="k">Customers</div><div class="v">${s.total_customers}</div></div>
+        <div class="metric"><div class="k">Total MRR</div><div class="v">${usd(s.total_mrr)}</div></div>
+        <div class="metric risk"><div class="k">MRR at risk</div><div class="v">${usd(s.mrr_at_risk)}</div></div>
+      </div>`;
+      extra=`<div class="src">As of ${esc(s.as_of)}. ${esc(s.data_source)}</div>`;
+      if(s.customers_at_risk) extra+=`<p class="small">${s.customers_at_risk} customer(s) with a failed plan and no later success in the window.</p>`;
+      if(s.excluded_note) extra+=`<p class="small">${esc(s.excluded_note)}</p>`;
+      if(s.paying_seats!=null) extra+=`<p class="small">Paying seats: ${s.paying_seats} (Brian Beck and John Boyce each have two seats). Paying customers: ${s.paying_customers}.</p>`;
+      if(s.mrr_basis_note) extra+=`<div class="note">${esc(s.mrr_basis_note)} Stripe-billed MRR: ${usd(s.mrr_stripe_billed)}. Smarty-rate MRR (headline): ${usd(s.mrr_smarty_rate)}.</div>`;
+    }
+    if(s.official_plans&&s.official_plans.length) extra+=`<details open><summary>Official plans</summary><ul>`+s.official_plans.map(p=>`<li>${esc(p.name)} — current customers ${p.current_customers}, MRR ${usd(p.current_mrr)}. ${esc(p.note||"")}</li>`).join("")+`</ul></details>`;
+    if(s.plans_verified) extra+=`<details><summary>Verified Stripe plans</summary><ul>`+s.plans_verified.map(p=>`<li>${esc(p.name)} — ${esc(p.price_id||"")} — Stripe amount ${usd(p.verified_amount)} / ${esc(p.interval||"month")} — current customers ${p.current_customers}, MRR ${usd(p.current_mrr)}. ${esc(p.note||"")}</li>`).join("")+`</ul></details>`;
+    if(s.unmapped_prices&&s.unmapped_prices.length) extra+=`<details open><summary>Unmapped Stripe prices found</summary><ul>`+s.unmapped_prices.map(p=>`<li>${esc(p.price_id)} — ${usd(p.unit_amount)} / ${esc(p.interval)} — ${p.current_customers} current (${esc(p.names||"")}). ${esc(p.note||"")}</li>`).join("")+`</ul></details>`;
+    if(s.official_plans_not_found&&s.official_plans_not_found.length) extra+=`<div class="note">${esc(s.official_plans_not_found_note||"Named plans not found in Stripe:")} ${s.official_plans_not_found.map(esc).join("; ")}.</div>`;
+    if(s.one_time&&s.one_time.rows) extra+=`<details><summary>One-time sales (not MRR)</summary><p class="small">${esc(s.one_time.note||"")}</p><ul>`+s.one_time.rows.map(r=>`<li>${esc(r.when)} — ${esc(r.description)} — ${usd(r.amount)} — ${esc(r.name||"")}</li>`).join("")+`</ul></details>`;
+    if(s.free_seats) extra+=`<details open><summary>Free seats (not in paying MRR) — ${s.free_seats.count}</summary><p class="small">${esc(s.free_seats.note||"")}</p><ul>`+(s.free_seats.people||[]).map(n=>`<li>${esc(n)}</li>`).join("")+`</ul></details>`;
+    if(s.paused_seats) extra+=`<details open><summary>Paused seats (not in paying MRR, not at risk) — ${s.paused_seats.count}</summary><p class="small">${esc(s.paused_seats.note||"")}</p><ul>`+(s.paused_seats.people||[]).map(r=>{
+      const label=typeof r==="string"?r:(esc(r.name)+(r.subscription_id?` — ${esc(r.subscription_id)}`:``)+(r.pause_collection_behavior?`, pause_collection ${esc(r.pause_collection_behavior)}`:``)+`, MRR ${usd(r.mrr||0)}`+(r.resumes_at?`, resumes ${esc(r.resumes_at)}`:`, no resume date`));
+      return `<li>${label}. ${esc(r.note||"")}</li>`;
+    }).join("")+`</ul></details>`;
+    if(s.count_gap||s.seat_total!=null) extra+=`<p class="small">${esc(s.count_gap||"")} Total: ${s.seat_total??s.seat_total_including_free} seats / ${s.people_total??s.customer_total_including_free} unique people (paying + free + paused).</p>`;
+    if(s.crm_breakdown){
+      const b=s.crm_breakdown;
+      extra+=`<details open><summary>${esc(b.title||"Total CRMs")}</summary><p class="small">${esc(b.note||"")}</p><ul>`;
+      extra+=`<li><strong>Paying:</strong> ${b.paying.customers} customers, MRR ${usd(b.paying.mrr)}. ${esc(b.paying.source)}</li>`;
+      extra+=`<li><strong>BPO:</strong> official count (Smarty) ${b.bpo.official_count_smarty}. ${esc(b.bpo.official_source)} Live $1 seats in Stripe before dropping eXp names: ${b.bpo.live_1_dollar_seats_stripe.subscriptions} subscriptions / ${b.bpo.live_1_dollar_seats_stripe.unique_customers} unique customers. ${esc(b.bpo.live_1_dollar_seats_stripe.of_which)} After excluding eXp from this line: ${b.bpo.live_1_dollar_after_excluding_exp.unique_customers} unique / MRR ${usd(b.bpo.live_1_dollar_after_excluding_exp.mrr)}.</li>`;
+      extra+=`<li><strong>Chris / partner-billed $1 rebill seats (sourced):</strong> ${b.chris_partner_billed.one_dollar_rebill_customers_sourced} — ${b.chris_partner_billed.names.map(esc).join(", ")}. ${esc(b.chris_partner_billed.source)} ${esc(b.chris_partner_billed.chris_dicristo)}</li>`;
+      extra+=`<li><strong>eXp team agents:</strong> ${b.exp_team_agents.named_agents} named agents (${b.exp_team_agents.names_agents.map(esc).join(", ")}) plus ${b.exp_team_agents.business_accounts} business accounts (${b.exp_team_agents.names_business.map(esc).join(", ")}). ${esc(b.exp_team_agents.source)}</li>`;
+      extra+=`<li><strong>Tom Kelly / Direct One:</strong> ${esc(b.tom_kelly.note)} ${esc(b.tom_kelly.source)}</li>`;
+      extra+=`</ul></details>`;
+    }
+    if(s.vendor_comparison){
+      const v=s.vendor_comparison;
+      function monthRows(block){
+        return (block.months||[]).map(m=>`<tr><td>${esc(m.month)}</td><td class="money">${usd(m.collected)}</td><td class="money">${usd(m.paid)}</td></tr>`).join("");
+      }
+      extra+=`<details open><summary>${esc(v.label)}</summary>`;
+      extra+=`<p class="small">${esc(v.collected_definition||"")} ${esc(v.paid_definition||"")} ${esc(v.sources||"")}</p>`;
+      extra+=`<p class="small"><strong>January–October:</strong> collected ${usd(v.jan_oct.collected)} vs paid ${usd(v.jan_oct.paid)}. <strong>August–October:</strong> collected ${usd(v.aug_oct.collected)} vs paid ${usd(v.aug_oct.paid)}.</p>`;
+      extra+=`<div style="overflow:auto"><table><thead><tr><th>Month</th><th>Stripe collected</th><th>TD paid</th></tr></thead><tbody>`+monthRows(v.jan_oct)+`</tbody></table></div>`;
+      extra+=`<p class="small"><strong>November (partial / missing):</strong> Stripe collected ${usd(v.november.collected_partial_through_nov8)}. TD paid: not in file through Nov 9. ${esc(v.november.note||"")}</p>`;
+      if(v.mbp_l2l_bundle_not_in_totals) extra+=`<p class="small">${esc(v.mbp_l2l_bundle_not_in_totals.note)} January–October ${usd(v.mbp_l2l_bundle_not_in_totals.jan_oct)}; August–October ${usd(v.mbp_l2l_bundle_not_in_totals.aug_oct)}.</p>`;
+      extra+=`</details>`;
+    }
+    if(s.partner_payout){
+      const pp=s.partner_payout;
+      extra+=`<details open><summary>${esc(pp.label)}</summary>`;
+      extra+=`<p class="small">${esc(pp.payee||"")}. ${esc(pp.note||"")} ${esc(pp.source||"")}</p>`;
+      extra+=`<p class="small"><strong>January through Nov 9 principals:</strong> ${usd(pp.jan_through_nov9_principal)}. <strong>August–October principals:</strong> ${usd(pp.aug_oct_principal)}. <strong>November through Nov 9:</strong> ${usd(pp.november_through_nov9)}. Same-day INTL fees (shown separately, not in the payout total): ${usd(pp.intl_fees_separate)}.</p>`;
+      extra+=`<div style="overflow:auto"><table><thead><tr><th>Month</th><th>Principal paid (TD)</th><th>INTL fee (separate)</th></tr></thead><tbody>`;
+      extra+=(pp.monthly||[]).map(m=>`<tr><td>${esc(m.month)}</td><td class="money">${usd(m.principal)}</td><td class="money">${usd(m.intl_fee_separate)}</td></tr>`).join("");
+      extra+=`</tbody></table></div>`;
+      if(pp.stripe_collected_same_windows){
+        const sc=pp.stripe_collected_same_windows;
+        extra+=`<p class="small">Listing Engine Stripe collected in the same windows: January–October ${usd(sc.jan_oct)}; August–October ${usd(sc.aug_oct)}; November partial through Nov 8 ${usd(sc.november_partial_through_nov8)}. ${esc(sc.note||"")}</p>`;
+      }
+      extra+=`</details>`;
+    }
+    const pill=s.mapping_needed?' <span class="pill">MAPPING NEEDED</span>':(s.partial?' <span class="pill">PARTIAL MONTH</span>':'');
+    card.innerHTML=`<h2>${esc(s.label)}${pill}</h2>`+metrics+extra;
+    root.appendChild(card);
+  });
+  const d1=d.dollar1_seats;
+  document.getElementById("dollar1").innerHTML=`<div class="card"><h2>${esc(d1.label)}</h2><div class="src">As of ${esc(d1.as_of)}. ${esc(d1.data_source)}</div>
+    <div class="metrics">
+      <div class="metric"><div class="k">Accounts</div><div class="v">${d1.total_customers}</div></div>
+      <div class="metric"><div class="k">Total MRR</div><div class="v">${usd(d1.total_mrr)}</div></div>
+      <div class="metric risk"><div class="k">MRR at risk</div><div class="v">${usd(d1.mrr_at_risk)}</div></div>
+    </div></div>`;
+  document.getElementById("failed-intro").textContent=d.failed_plans.customer_count+" customers, "+d.failed_plans.row_count+" unpaid periods, "+usd(d.failed_plans.owed_total)+" owed in this window. "+d.failed_plans.owed_total_note+" Monthly amount at risk is the current subscription amount, counted once per person per product.";
+  document.getElementById("failed-body").innerHTML=d.failed_plans.rows.map(r=>`<tr>
+    <td>${esc(r.name)}<div class="small">${esc(r.email||"")}</div></td>
+    <td>${esc(r.product)}</td>
+    <td>${esc(r.plan||"")}<div class="small">${esc(r.billing_period||"")}</div></td>
+    <td class="money">${usd(r.amount_owed)}</td>
+    <td class="money">${usd(r.mrr_at_risk)}<div class="small">${esc(r.mrr_note||"")}</div></td>
+    <td>${esc(r.last_failure_et||"")}</td>
+  </tr>`).join("");
+  document.getElementById("unsourced").innerHTML=d.unsourced_figures.map(x=>`<li>${esc(x)}</li>`).join("")+(d.other_found_not_in_a_section||[]).map(x=>`<li>${esc(x.what)}: ${esc(x.detail)}</li>`).join("");
+  document.getElementById("footer").textContent="Light passcode protection only — not real access control. Intended for Smarty and Tom Kelly. Customer names are shown for them. Weekly snapshot, generated "+d.as_of+". Re-run python3 /workspace/dashboard/build.py and re-paste index.html to refresh. Nothing was charged, sent, or written to Stripe or GHL.";
+}
+if(sessionStorage.getItem("sbs_dash_ok")==="1") openApp();
+</script>
+</body>
+</html>
