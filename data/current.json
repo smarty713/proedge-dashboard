@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "as_of": "2026-11-12",
+  "company": "SP Smart Business Solutions LLC",
+  "partners": [
+    {"id": "smarty", "name": "Smarty"},
+    {"id": "tom", "name": "Tom Kelly"}
+  ],
+  "split_rule": {
+    "base_partner": "smarty",
+    "base_amount": 4000,
+    "remainder_share": 0.5,
+    "carryforward": false
+  },
+  "kpis": {
+    "revenue": 17580.16,
+    "profit": 11414.54,
+    "affiliate_payouts": 886.61,
+    "affiliate_note": "Comes out of CRM",
+    "owed": 675
+  },
+  "split": {
+    "profit": 11414.54,
+    "base": 4000,
+    "remainder": 7414.54,
+    "shares": {
+      "smarty": {"base": 4000, "remainder": 3707.27, "total": 7707.27},
+      "tom": {"base": 0, "remainder": 3707.27, "total": 3707.27}
+    }
+  },
+  "products": [
+    {
+      "id": "crm",
+      "label": "CRM",
+      "customers": 71,
+      "revenue": 10005.33,
+      "vendor_cost": 536.76,
+      "vendor_cost_note": "GHL Founders Subscription",
+      "affiliate_payouts": 886.61,
+      "profit": 8581.96,
+      "profit_pending": false,
+      "note": "Affiliate payouts come out of CRM."
+    },
+    {
+      "id": "listing_to_leads",
+      "label": "Listing to Leads",
+      "customers": 33,
+      "revenue": 876.64,
+      "vendor_cost": 750,
+      "profit": 126.64,
+      "profit_pending": false
+    },
+    {
+      "id": "seller_assist",
+      "label": "Seller Assist",
+      "detail": "Includes iBuyer Offers",
+      "customers": 59,
+      "revenue": 4169.69,
+      "vendor_cost": 2793,
+      "vendor_cost_note": "57 × $49",
+      "profit": 1376.69,
+      "profit_pending": false
+    },
+    {
+      "id": "seller_lead_engine",
+      "label": "Seller Lead Engine",
+      "customers": 21,
+      "revenue": 1870.50,
+      "vendor_cost": 935.25,
+      "vendor_cost_note": "50% share",
+      "profit": 935.25,
+      "profit_pending": false
+    },
+    {
+      "id": "service_plans",
+      "label": "Service Plans",
+      "customers": 2,
+      "revenue": 394.00,
+      "vendor_cost": 0,
+      "profit": 394.00,
+      "profit_pending": false
+    },
+    {
+      "id": "ai_employee",
+      "label": "AI Employee",
+      "customers": 19,
+      "revenue": 255.00,
+      "vendor_cost": null,
+      "profit": null,
+      "profit_pending": true,
+      "note": "3 subscription, 15 wallet-funded, 1 own. Subscription revenue only. Wallet-funded share is not isolable."
+    }
+  ],
+  "unique_customers": 98,
+  "customer_status": [
+    {"id": "paying", "label": "Paying", "count": 86},
+    {"id": "past_due", "label": "Past due", "count": 3},
+    {"id": "no_active_sub", "label": "No active sub", "count": 4},
+    {"id": "not_billed", "label": "Not billed", "count": 9}
+  ],
+  "past_due": [
+    {"name": "Giancanelli", "amount": 218, "failed": "2026-11-12"},
+    {"name": "Krautbauer", "amount": 248, "failed": "2026-11-11"},
+    {"name": "Guerrero", "amount": 209, "failed": null}
+  ],
+  "snapshots": ["2026-11-12"]
+}

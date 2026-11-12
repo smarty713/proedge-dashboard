@@ -17,29 +17,106 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-
 .gate-box input{width:100%;padding:10px 12px;border:1px solid #3a5d7a;border-radius:8px;background:#082238;color:#fff;font-size:1rem}
 .gate-box button{margin-top:12px;width:100%;padding:10px 12px;border:0;border-radius:8px;background:#4ea3e0;color:#072033;font-weight:700;cursor:pointer}
 .gate-error{color:#ffb4b4;font-size:.85rem;margin-top:8px;min-height:1.2em}
-header{background:var(--navy-dark);color:#fff;padding:14px 20px}
-header h1{margin:0;font-size:1rem;font-weight:600}
-.wrap{max-width:720px;margin:0 auto;padding:20px 16px 40px}
-.table-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
-th{background:var(--navy);color:#fff;font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
-td.num,th.num{text-align:right;white-space:nowrap}
-tbody tr:last-child td{border-bottom:0}
-tfoot td{border-bottom:0;border-top:2px solid var(--navy);font-weight:700;background:#eef3f8}
-.risk{color:var(--risk)}
-.sub{display:block;margin-top:2px;font-size:.75rem;font-weight:400;color:var(--muted);white-space:nowrap}
-details{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:0}
-details summary{cursor:pointer;padding:12px 16px;font-weight:600;color:var(--navy);list-style:none}
-details summary::-webkit-details-marker{display:none}
-details summary::before{content:"▸ ";display:inline-block;width:1.1em}
-details[open] summary::before{content:"▾ "}
-details .table-wrap{border:0;border-top:1px solid var(--line);border-radius:0 0 10px 10px}
-@media (max-width:600px){
-  html,body{font-size:15px}
-  th,td{padding:8px 10px}
-  header{padding:12px 16px}
-  .wrap{padding:14px 10px 32px}
+#app[hidden]{display:none !important}
+#app:not([hidden]){display:block;min-height:100vh;background:radial-gradient(900px 420px at 0% -10%,rgba(198,164,106,.12),transparent 55%),radial-gradient(720px 360px at 100% 0%,rgba(127,151,166,.10),transparent 48%),#12161c;color:#ebe6dc;color-scheme:dark}
+html:has(#app:not([hidden])){background:#12161c}
+#app .wrap{max-width:1120px;margin:0 auto;padding:28px 22px 72px;overflow-x:clip}
+#app .top{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding-bottom:20px;border-bottom:1px solid rgba(198,164,106,.38)}
+#app .eyebrow{margin:0;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#c6a46a}
+#app .eyebrow::before{content:"";display:inline-block;width:18px;height:1px;background:#c6a46a;margin-right:8px;vertical-align:middle}
+#app h1{margin:6px 0 0;font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:2.15rem;font-weight:500;letter-spacing:-.03em;line-height:1.05}
+#app h2{margin:0;font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.45rem;font-weight:500;letter-spacing:-.02em}
+#app h3{margin:0;font-size:1rem;font-weight:600}
+#app .subhead{margin:8px 0 0;color:#c8bfb2}
+#app .asof{margin:0;border:1px solid rgba(198,164,106,.5);color:#e6d3ae;border-radius:999px;padding:8px 14px;font-size:.85rem;white-space:nowrap}
+#app .kicker{margin:0 0 4px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#c6a46a}
+#app .lede{margin:8px 0 0;color:#c8bfb2;font-size:.92rem;max-width:68ch}
+#app .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+#app .kpi{background:rgba(26,31,39,.94);border:1px solid rgba(243,239,230,.10);border-radius:16px;padding:16px 16px 14px;min-height:128px}
+#app .kpi .label{margin:0;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#c8bfb2}
+#app .kpi .value,#app .partner .value,#app .due .amt,#app .pcard dd{font-variant-numeric:tabular-nums}
+#app .kpi .value{margin:14px 0 0;font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.9rem;line-height:1.05;letter-spacing:-.02em}
+#app .kpi .hint{margin:8px 0 0;color:#c8bfb2;font-size:.8rem}
+#app .kpi.owed{background:linear-gradient(180deg,rgba(224,177,92,.10),rgba(26,31,39,.94) 46%)}
+#app .kpi.owed .value{color:#f0c27a}
+#app .note{margin:14px 0 0;padding:10px 12px;border-left:2px solid rgba(198,164,106,.75);color:#d9d0c2;font-size:.9rem}
+#app .panel{margin-top:22px;background:#1a1f27;border:1px solid rgba(243,239,230,.10);border-radius:18px;padding:18px 18px 16px}
+#app .block{margin-top:22px}
+#app .split{display:grid;grid-template-columns:minmax(220px,280px) 1fr;gap:18px;align-items:center;margin-top:16px}
+#app .donut-wrap{position:relative}
+#app .kpis,#app .cards,#app .partners,#app .status,#app .split{min-width:0}
+#app .kpis>*,#app .cards>*,#app .partners>*,#app .status>*,#app .split>*{min-width:0}
+#app .chart-box{position:relative;height:320px;width:100%;max-width:100%;min-width:0}
+#app .chart-box canvas{position:absolute;left:0;top:0;width:100% !important;height:100% !important}
+#app .chart-box.donut{height:240px}
+#app .chart-box.line{height:250px}
+#app .chart-box.status{height:120px}
+#app .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center;padding:0 18%}
+#app .donut-center span{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:#c8bfb2}
+#app .donut-center strong{font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.15rem;font-weight:500;margin-top:4px}
+#app .partners{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#app .partner{background:#12161c;border-radius:14px;padding:14px 14px 12px;border:1px solid rgba(243,239,230,.08)}
+#app .partner .label{margin:0;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:#c8bfb2}
+#app .partner .value{margin:8px 0 0;font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.7rem;letter-spacing:-.02em}
+#app .partner .hint{margin:8px 0 0;color:#c8bfb2;font-size:.82rem}
+#app .formula{margin-top:18px}
+#app .bar{display:flex;height:16px;border-radius:999px;overflow:hidden;background:#0e1218}
+#app .bar span{display:block;min-width:2px;height:100%}
+#app .formula-key{display:flex;flex-wrap:wrap;gap:8px 16px;margin:10px 0 0;padding:0}
+#app .formula-key li{list-style:none;display:flex;align-items:center;gap:6px;font-size:.82rem;color:#c8bfb2}
+#app .swatch{width:10px;height:10px;border-radius:2px;flex:none}
+#app .rule{margin:12px 0 0;font-size:.95rem}
+#app .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+#app .pcard{background:#1a1f27;border:1px solid rgba(243,239,230,.10);border-radius:16px;padding:16px}
+#app .pcard header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+#app .pcard .detail{margin:3px 0 0;color:#c8bfb2;font-size:.8rem}
+#app .cust{margin:12px 0 0;color:#c8bfb2;font-size:.9rem}
+#app .cust strong{color:#ebe6dc;font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.35rem;font-weight:500;margin-right:4px}
+#app .pcard dl{margin:12px 0 0}
+#app .pcard dl div{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid rgba(243,239,230,.08)}
+#app .pcard dt{color:#c8bfb2;font-size:.82rem}
+#app .pcard dd{margin:0}
+#app .pcard .profit dt{color:#e6d3ae}
+#app .pcard .profit dd{font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.12rem}
+#app .pending{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-style:italic;color:#e0b15c;font-size:.95rem}
+#app .fine{margin:10px 0 0;color:#c8bfb2;font-size:.8rem}
+#app .badge{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;border-radius:999px;padding:4px 8px;border:1px solid transparent;white-space:nowrap}
+#app .badge.good{color:#b7d7c4;background:rgba(143,191,163,.12);border-color:rgba(143,191,163,.4)}
+#app .badge.pending{color:#e6d3ae;background:rgba(224,177,92,.12);border-color:rgba(224,177,92,.4)}
+#app .badge.bad{color:#f0c2be;background:rgba(224,139,132,.12);border-color:rgba(224,139,132,.45)}
+#app .status{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;margin-top:14px}
+#app .unique{margin:0 0 8px;color:#c8bfb2}
+#app .unique strong{color:#ebe6dc;font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.45rem;font-weight:500;margin-right:6px}
+#app .legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:12px 0 0;padding:0}
+#app .legend li{display:flex;align-items:center;gap:8px;list-style:none;font-size:.88rem}
+#app .legend b{font-weight:600;margin-left:4px}
+#app .due{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid rgba(243,239,230,.08)}
+#app .due:last-of-type{border-bottom:0}
+#app .due .who{font-weight:600}
+#app .due .when{color:#c8bfb2;font-size:.82rem;margin-top:2px}
+#app .due .amt{font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.15rem;color:#f0c27a}
+#app .due-total{display:flex;justify-content:space-between;margin:4px 0 0;padding-top:10px;border-top:1px solid rgba(198,164,106,.35);font-size:.9rem}
+#app .due-total b{font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.05rem;font-weight:500;color:#f0c27a}
+#app .month{margin:12px 0 14px}
+#app .month-top{display:flex;justify-content:space-between;gap:12px;color:#c8bfb2;font-size:.85rem;margin-bottom:6px}
+#app .track{height:8px;border-radius:999px;background:#0e1218;overflow:hidden}
+#app .fill{height:100%;background:linear-gradient(90deg,#8d6e3c,#c6a46a);border-radius:999px}
+#app .chart-missing{margin:8px 0 0;color:#e0b15c;font-size:.88rem}
+#app .foot{margin:28px 0 0;color:#8d867b;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase}
+#app .loading{color:#c8bfb2;padding:28px 0}
+@media (max-width:900px){
+  #app .kpis{grid-template-columns:1fr 1fr}
+  #app .kpi .value{font-size:1.5rem}
+  #app .split,#app .status{grid-template-columns:1fr}
+  #app .cards{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  #app .wrap{padding:18px 14px 48px}
+  #app .top{flex-direction:column;align-items:flex-start}
+  #app h1{font-size:1.75rem}
+  #app .kpis,#app .cards,#app .partners{grid-template-columns:1fr}
+  #app .kpi .value{font-size:2rem}
+  #app .chart-box{height:300px}
 }
 </style>
 </head>
@@ -54,198 +131,14 @@ details .table-wrap{border:0;border-top:1px solid var(--line);border-radius:0 0 
   </form>
 </div>
 <div id="app" hidden>
-  <header>
-    <h1>SP Smart Business Solutions LLC</h1>
-  </header>
   <div class="wrap">
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th class="num">Customers</th>
-            <th class="num">MRR</th>
-            <th class="num">Unpaid (3 mo)</th>
-            <th class="num">Profit</th>
-          </tr>
-        </thead>
-        <tbody id="lines"></tbody>
-        <tfoot id="totals"></tfoot>
-      </table>
-    </div>
-    <details>
-      <summary>Customers in arrears</summary>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Products</th>
-              <th class="num">Total unpaid</th>
-              <th>Last failed date</th>
-            </tr>
-          </thead>
-          <tbody id="arrears"></tbody>
-        </table>
-      </div>
-    </details>
+    <header class="top" id="top"></header>
+    <main id="dashboard"><p class="loading">Loading the latest snapshot…</p></main>
+    <footer class="foot" id="foot"></footer>
   </div>
 </div>
 <script>
 const PWHASH = "0f2cb44170f42cc966535f392a10dcd4499426df69dc476f1bf36609f7fa8c1e";
-const DATA = {
-  "lines": [
-    {
-      "id": "crm",
-      "label": "CRM",
-      "customers": 72,
-      "mrr": 10553.33,
-      "unpaid": 2150.0,
-      "profit_pending": true,
-      "profit_notes": [
-        "GHL Founders Subscription $536.76",
-        "affiliate payouts pending",
-        "before affiliate: $10,016.57"
-      ]
-    },
-    {
-      "id": "sa",
-      "label": "Seller Assist",
-      "customers": 59,
-      "mrr": 3859.93,
-      "unpaid": 277.0,
-      "not_billed": 7,
-      "not_billed_amount": 553.0,
-      "not_billed_label": "7 not billed \u00b7 $553/mo",
-      "profit": 1066.93,
-      "profit_notes": [
-        "57 seats \u00d7 $49"
-      ]
-    },
-    {
-      "id": "l2l",
-      "label": "Listing to Leads",
-      "customers": 33,
-      "mrr": 861.83,
-      "unpaid": 0.0,
-      "not_billed": 8,
-      "not_billed_amount": 240.0,
-      "not_billed_label": "8 not billed \u00b7 $240/mo",
-      "profit": 111.83
-    },
-    {
-      "id": "ai_employee",
-      "label": "AI Employee",
-      "customers": 19,
-      "mrr": 255.0,
-      "unpaid": 0.0,
-      "mrr_notes": [
-        "subscriptions only; wallet-funded share not isolable"
-      ],
-      "customer_notes": [
-        "3 billed by subscription \u00b7 15 wallet-funded \u00b7 1 own"
-      ],
-      "profit_pending": true,
-      "profit_notes": [
-        "wallet-funded revenue not isolable in Stripe",
-        "GHL cost $1,816, to confirm"
-      ]
-    },
-    {
-      "id": "lead",
-      "label": "Seller Lead Engine",
-      "customers": 21,
-      "mrr": 1870.5,
-      "unpaid": 0.0,
-      "customer_notes": [
-        "3 free \u00b7 1 paused, Tom Murphy"
-      ],
-      "profit": 935.25
-    },
-    {
-      "id": "service_plans",
-      "label": "Service Plans",
-      "customers": 2,
-      "mrr": 394.0,
-      "unpaid": 0.0,
-      "profit": 394.0
-    }
-  ],
-  "arrears": [
-    {
-      "name": "Jeffery Bolling",
-      "products": "CRM",
-      "total": 796.0,
-      "last_failed": "Sep 29, 2026"
-    },
-    {
-      "name": "Andrea Leassear",
-      "products": "CRM, Seller Assist",
-      "total": 357.0,
-      "last_failed": "Sep 21, 2026"
-    },
-    {
-      "name": "Robert Weichelt",
-      "products": "CRM",
-      "total": 199.0,
-      "last_failed": "Aug 26, 2026"
-    },
-    {
-      "name": "Victor Ruelas Ochoa",
-      "products": "CRM",
-      "total": 199.0,
-      "last_failed": "Nov 8, 2026"
-    },
-    {
-      "name": "Camille Haynes",
-      "products": "CRM",
-      "total": 198.0,
-      "last_failed": "Sep 21, 2026"
-    },
-    {
-      "name": "Mike Giancanelli",
-      "products": "CRM",
-      "total": 198.0,
-      "last_failed": "Sep 15, 2026"
-    },
-    {
-      "name": "Kevin Lane",
-      "products": "CRM",
-      "total": 183.0,
-      "last_failed": "Sep 15, 2026"
-    },
-    {
-      "name": "Jason DeLong",
-      "products": "Seller Assist",
-      "total": 119.0,
-      "last_failed": "Sep 28, 2026"
-    },
-    {
-      "name": "Tesla Realty Group / Pay Zero Real Estate Team",
-      "products": "CRM",
-      "total": 99.0,
-      "last_failed": "Oct 17, 2026"
-    },
-    {
-      "name": "Cathy Ryan",
-      "products": "Seller Assist",
-      "total": 79.0,
-      "last_failed": "Sep 26, 2026"
-    }
-  ],
-  "totals": {
-    "profit_pending": true,
-    "profit_excl_crm": 2508.01,
-    "profit_excl_label": "excl. CRM and AI Employee",
-    "profit_notes": [
-      "excl. CRM and AI Employee: $2,508.01"
-    ],
-    "sa_billable_seats": 57,
-    "sa_seat_cost": 2793.0,
-    "unique_customers": 99,
-    "unique_customers_label": "unique customers"
-  }
-};
 async function sha256hex(text){
   const enc=new TextEncoder().encode(text);
   if(window.crypto&&window.crypto.subtle){
@@ -291,8 +184,6 @@ function sha256fallback(ascii){
   }
   return h.map(x=>("00000000"+x.toString(16)).slice(-8)).join("");
 }
-function usd(n){if(n===null||n===undefined)return "—";return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(n);}
-function esc(s){return String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));}
 function unlock(ev){
   ev.preventDefault();
   const val=document.getElementById("pw").value||"";
@@ -303,58 +194,581 @@ function unlock(ev){
   return false;
 }
 function openApp(){document.getElementById("gate").classList.add("hidden");document.getElementById("app").hidden=false;render();}
-function notesHtml(notes){
-  return (notes||[]).map(n=>`<div class="sub">${esc(n)}</div>`).join("");
+
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MONTHS_SHORT=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const STATUS_COLOR={paying:"#8fbfa3",past_due:"#e08b84",no_active_sub:"#c6a46a",not_billed:"#8aa0b4"};
+const PARTNER_COLOR={smarty:"#c6a46a",tom:"#7f97a6"};
+const SEGMENT_ALT={smarty:"#e4d2ae"};
+let charts=[];
+
+function esc(s){return String(s??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));}
+function cents(n){const x=Number(n);return Number.isFinite(x)?Math.round(x*100):null;}
+function usd(n){return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(Number(n));}
+function money(value,pending){
+  if(pending||value===null||value===undefined||value==="") return {text:"pending",pending:true};
+  return {text:usd(value),pending:false};
 }
-function profitCell(s){
-  if(s.profit_pending){
-    return `<td class="num">pending${notesHtml(s.profit_notes)}</td>`;
+function moneyHtml(value,pending){
+  const m=money(value,pending);
+  return m.pending?`<span class="pending">${m.text}</span>`:esc(m.text);
+}
+function parseISO(iso){const p=String(iso).split("-").map(Number);return {y:p[0],m:p[1],d:p[2]};}
+function utcDate(y,m,d){return new Date(Date.UTC(y,m-1,d));}
+function isoFromDate(dt){
+  const m=String(dt.getUTCMonth()+1).padStart(2,"0");
+  const d=String(dt.getUTCDate()).padStart(2,"0");
+  return dt.getUTCFullYear()+"-"+m+"-"+d;
+}
+function formatLong(iso){const p=parseISO(iso);return MONTHS[p.m-1]+" "+p.d+", "+p.y;}
+function formatShort(iso){const p=parseISO(iso);return MONTHS_SHORT[p.m-1]+" "+p.d;}
+function mondayOnOrBefore(iso){
+  const p=parseISO(iso);
+  const dt=utcDate(p.y,p.m,p.d);
+  const day=dt.getUTCDay();
+  dt.setUTCDate(dt.getUTCDate()+(day===0?-6:1-day));
+  return isoFromDate(dt);
+}
+function mondaysInMonth(iso){
+  const p=parseISO(iso);
+  const last=new Date(Date.UTC(p.y,p.m,0)).getUTCDate();
+  const out=[];
+  for(let d=1;d<=last;d++){
+    const dt=utcDate(p.y,p.m,d);
+    if(dt.getUTCDay()===1) out.push(isoFromDate(dt));
   }
-  const neg=Number(s.profit)<0?" risk":"";
-  return `<td class="num${neg}">${usd(s.profit)}${notesHtml(s.profit_notes)}</td>`;
+  return out;
 }
-function render(){
-  const d=DATA;
-  const lines=d.lines||[];
-  let cust=0,mrr=0,unpaid=0;
-  document.getElementById("lines").innerHTML=lines.map(s=>{
-    cust+=Number(s.customers||0);
-    mrr+=Number(s.mrr||0);
-    unpaid+=Number(s.unpaid||0);
-    const risk=Number(s.unpaid||0)>0?" risk":"";
-    return `<tr>
-      <td>${esc(s.label)}</td>
-      <td class="num">${esc(s.customers)}${(s.customer_notes||[]).map(n=>`<div class="sub">${esc(n)}</div>`).join("")}${s.not_billed_label?`<div class="sub">${esc(s.not_billed_label)}</div>`:(s.not_billed!=null&&s.not_billed!==""?`<div class="sub">${esc(s.not_billed)} not billed</div>`:"")}</td>
-      <td class="num">${usd(s.mrr)}${notesHtml(s.mrr_notes)}</td>
-      <td class="num${risk}">${usd(s.unpaid)}</td>
-      ${profitCell(s)}
-    </tr>`;
+function monthProgress(iso){
+  const p=parseISO(iso);
+  const days=new Date(Date.UTC(p.y,p.m,0)).getUTCDate();
+  return {day:p.d,days:days,label:MONTHS[p.m-1],year:p.y};
+}
+function joinNames(names){
+  if(names.length<=1) return names[0]||"";
+  if(names.length===2) return names[0]+" and "+names[1];
+  return names.slice(0,-1).join(", ")+", and "+names[names.length-1];
+}
+function partnerColor(id,index){
+  if(PARTNER_COLOR[id]) return PARTNER_COLOR[id];
+  const fallback=["#c6a46a","#7f97a6","#8fbfa3","#8aa0b4"];
+  return fallback[index%fallback.length];
+}
+function nameOf(data,id){
+  const found=(data.partners||[]).find(p=>p.id===id);
+  return found?found.name:id;
+}
+function healthOf(p){
+  if(p.profit_pending||p.profit===null||p.profit===undefined) return {label:"Pending",tone:"pending"};
+  if(Number(p.profit)<0) return {label:"Loss",tone:"bad"};
+  if(Number(p.profit)===0) return {label:"Flat",tone:"pending"};
+  return {label:"Healthy",tone:"good"};
+}
+function bridges(p){
+  if(p.profit_pending||p.profit===null||p.profit===undefined) return true;
+  if(p.vendor_cost===null||p.vendor_cost===undefined) return true;
+  const rev=cents(p.revenue), cost=cents(p.vendor_cost), profit=cents(p.profit);
+  const aff=p.affiliate_payouts?cents(p.affiliate_payouts):0;
+  if(rev===null||cost===null||profit===null||aff===null) return true;
+  return rev-cost-aff===profit;
+}
+function revenueTie(data){
+  const sum=(data.products||[]).reduce((s,p)=>s+(cents(p.revenue)||0),0);
+  const stated=cents(data.kpis&&data.kpis.revenue);
+  if(stated===null||sum===stated) return "";
+  const diff=stated-sum;
+  const direction=diff>0?"under":"over";
+  return "Product lines sum to "+usd(sum/100)+", which is "+usd(Math.abs(diff)/100)+" "+direction+" the total above. That difference is not assigned to a line.";
+}
+function profitTie(data){
+  let sum=0, any=false;
+  (data.products||[]).forEach(p=>{
+    if(p.profit_pending||p.profit===null||p.profit===undefined) return;
+    sum+=cents(p.profit)||0;
+    any=true;
+  });
+  const stated=cents(data.kpis&&data.kpis.profit);
+  if(!any||stated===null||sum===stated) return "";
+  return "Product profits that are not pending sum to "+usd(sum/100)+". The stated profit is "+usd(stated/100)+".";
+}
+function owedTie(data){
+  const sum=(data.past_due||[]).reduce((s,r)=>s+(cents(r.amount)||0),0);
+  const stated=cents(data.kpis&&data.kpis.owed);
+  if(stated===null||sum===stated) return "";
+  return "The past-due list sums to "+usd(sum/100)+". Owed is "+usd(stated/100)+".";
+}
+function splitOk(data){
+  const rule=data.split_rule, split=data.split;
+  if(!rule||!split||!split.shares) return false;
+  const ids=Object.keys(split.shares);
+  if(!ids.length) return false;
+  let total=0, baseSum=0, remSum=0;
+  for(let i=0;i<ids.length;i++){
+    const s=split.shares[ids[i]];
+    if(!s) return false;
+    const b=cents(s.base), r=cents(s.remainder), t=cents(s.total);
+    if(b===null||r===null||t===null||b+r!==t) return false;
+    total+=t; baseSum+=b; remSum+=r;
+  }
+  if(cents(split.profit)===null||total!==cents(split.profit)) return false;
+  if(!data.kpis||cents(data.kpis.profit)!==cents(split.profit)) return false;
+  if(baseSum+remSum!==cents(split.profit)) return false;
+  if(cents(split.remainder)!==remSum||cents(split.base)!==baseSum) return false;
+  if(cents(split.profit)-cents(split.base)!==cents(split.remainder)) return false;
+  if(cents(split.base)>cents(rule.base_amount)) return false;
+  if(cents(split.profit)>=cents(rule.base_amount)&&cents(split.base)!==cents(rule.base_amount)) return false;
+  const basePartner=split.shares[rule.base_partner];
+  if(!basePartner||cents(basePartner.base)!==cents(split.base)) return false;
+  if(rule.remainder_share===0.5){
+    const parts=ids.map(id=>cents(split.shares[id].remainder));
+    for(let i=1;i<parts.length;i++) if(parts[i]!==parts[0]) return false;
+  }
+  return true;
+}
+function statusSum(data){
+  return (data.customer_status||[]).reduce((s,row)=>s+Number(row.count||0),0);
+}
+function pendingLabels(data){
+  return (data.products||[]).filter(p=>p.profit_pending).map(p=>p.label);
+}
+function headerHTML(data){
+  const names=joinNames((data.partners||[]).map(p=>p.name));
+  const legal=data.company?names+" · "+data.company:names;
+  return `<div>
+      <p class="eyebrow">ProEdge</p>
+      <h1>Partner dashboard</h1>
+      <p class="subhead">${esc(legal)}</p>
+    </div>
+    <p class="asof">As of <time datetime="${esc(data.as_of)}">${esc(formatLong(data.as_of))}</time></p>`;
+}
+function kpisHTML(data){
+  const k=data.kpis||{};
+  const pending=pendingLabels(data);
+  let profitHint="After affiliate payouts.";
+  if(pending.length) profitHint+=" Excludes "+pending.join(", ")+" (pending).";
+  const owedHint=((data.past_due||[]).length)+" past due";
+  return `<section>
+    <p class="kicker">${esc(monthProgress(data.as_of).label+" "+monthProgress(data.as_of).year)}</p>
+    <div class="kpis">
+      <article class="kpi" data-kpi="revenue"><p class="label">Total revenue</p><p class="value">${esc(usd(k.revenue))}</p></article>
+      <article class="kpi" data-kpi="profit"><p class="label">Total profit</p><p class="value">${esc(usd(k.profit))}</p><p class="hint">${esc(profitHint)}</p></article>
+      <article class="kpi" data-kpi="affiliate"><p class="label">Affiliate payouts</p><p class="value">${esc(usd(k.affiliate_payouts))}</p><p class="hint">${esc(k.affiliate_note||"")}</p></article>
+      <article class="kpi owed" data-kpi="owed"><p class="label">Owed</p><p class="value">${esc(usd(k.owed))}</p><p class="hint">${esc(owedHint)}</p></article>
+    </div>
+  </section>`;
+}
+function tieHTML(data){
+  const notes=[];
+  const rev=revenueTie(data); if(rev) notes.push(rev);
+  const prof=profitTie(data); if(prof) notes.push(prof);
+  if(!splitOk(data)) notes.push("The partner split does not match the rule stored with this snapshot.");
+  return notes.map(n=>`<p class="note">${esc(n)}</p>`).join("");
+}
+function formulaSegments(data){
+  const rule=data.split_rule, shares=data.split.shares;
+  const half=rule.remainder_share===0.5?"half":"share";
+  const segs=[];
+  const baseId=rule.base_partner;
+  const base=shares[baseId];
+  if(base&&cents(base.base)>0) segs.push({id:baseId,kind:"base",amount:base.base,label:nameOf(data,baseId)+" base",color:partnerColor(baseId,0)});
+  if(base&&cents(base.remainder)>0){
+    segs.push({id:baseId,kind:"remainder",amount:base.remainder,label:nameOf(data,baseId)+" "+half,color:SEGMENT_ALT[baseId]||partnerColor(baseId,0)});
+  }
+  (data.partners||[]).forEach((p,i)=>{
+    if(p.id===baseId) return;
+    const s=shares[p.id];
+    if(!s) return;
+    if(cents(s.base)>0) segs.push({id:p.id,kind:"base",amount:s.base,label:p.name+" base",color:partnerColor(p.id,i)});
+    if(cents(s.remainder)>0) segs.push({id:p.id,kind:"remainder",amount:s.remainder,label:p.name+" "+half,color:partnerColor(p.id,i)});
+  });
+  return segs;
+}
+function partnerHint(share,rule){
+  const half=rule.remainder_share===0.5?"half of the remainder":"share of the remainder";
+  if(cents(share.base)>0&&cents(share.remainder)>0) return usd(share.base)+" base + "+half;
+  if(cents(share.base)>0) return usd(share.base)+" base";
+  if(cents(share.remainder)>0) return half.charAt(0).toUpperCase()+half.slice(1);
+  return "";
+}
+function ruleText(data){
+  const rule=data.split_rule;
+  const pct=Math.round(Number(rule.remainder_share)*100);
+  let text="The first "+usd(rule.base_amount)+" of monthly profit goes to "+nameOf(data,rule.base_partner)+". The remainder splits "+pct+"/"+(100-pct)+".";
+  if(rule.carryforward===false) text+=" No carryforward.";
+  return text;
+}
+function splitHTML(data){
+  const segs=formulaSegments(data);
+  const aria=segs.map(s=>s.label+" "+usd(s.amount)).join(", ");
+  const cards=(data.partners||[]).map((p,i)=>{
+    const share=data.split.shares[p.id]||{};
+    const color=partnerColor(p.id,i);
+    return `<article class="partner" data-partner="${esc(p.id)}" style="box-shadow:inset 3px 0 0 ${color}">
+      <p class="label">${esc(p.name)}</p>
+      <p class="value">${moneyHtml(share.total,false)}</p>
+      <p class="hint">${esc(partnerHint(share,data.split_rule))}</p>
+    </article>`;
   }).join("");
-  const tot=d.totals||{};
-  const totalRisk=unpaid>0?" risk":"";
-  let profitTd;
-  if(tot.profit_pending){
-    profitTd=`<td class="num">pending${notesHtml(tot.profit_notes)}</td>`;
-  } else {
-    const neg=Number(tot.profit)<0?" risk":"";
-    profitTd=`<td class="num${neg}">${usd(tot.profit)}${notesHtml(tot.profit_notes)}</td>`;
+  const bar=segs.map(s=>`<span style="flex:${Number(s.amount)} ${Number(s.amount)} 0;background:${s.color}"></span>`).join("");
+  const key=segs.map(s=>`<li><i class="swatch" style="background:${s.color}"></i>${esc(s.label)} ${esc(usd(s.amount))}</li>`).join("");
+  return `<section class="panel" id="split">
+    <p class="kicker">Partners</p>
+    <h2>Partner split</h2>
+    <p class="lede">The base is paid first. What remains is split. Nothing carries into the next month.</p>
+    <div class="split">
+      <div class="donut-wrap">
+        <div class="chart-box donut"><canvas id="splitChart"></canvas></div>
+        <div class="donut-center"><span>Profit</span><strong>${esc(usd(data.split.profit))}</strong></div>
+      </div>
+      <div class="partners">${cards}</div>
+    </div>
+    <div class="formula">
+      <div class="bar" role="img" aria-label="${esc(aria)}">${bar}</div>
+      <ul class="formula-key">${key}</ul>
+      <p class="rule">${esc(ruleText(data))}</p>
+    </div>
+  </section>`;
+}
+function productChartHTML(){
+  return `<section class="panel">
+    <p class="kicker">Product lines</p>
+    <h2>Profit by product line</h2>
+    <p class="lede">Revenue beside profit. A blank profit bar is pending, not zero.</p>
+    <div class="chart-box" role="img" aria-label="Horizontal bar chart of revenue and profit by product line."><canvas id="productChart"></canvas></div>
+    <ul class="legend">
+      <li><i class="swatch" style="background:#8eafc4"></i>Revenue</li>
+      <li><i class="swatch" style="background:#c6a46a"></i>Profit</li>
+    </ul>
+  </section>`;
+}
+function cardFine(p){
+  const bits=[];
+  if(p.vendor_cost_note) bits.push(p.vendor_cost_note);
+  if(p.note) bits.push(p.note);
+  if(!bridges(p)) bits.push("Revenue, vendor cost, and affiliate payouts do not bridge to profit.");
+  return bits.join(" · ");
+}
+function productCardsHTML(data){
+  const cards=(data.products||[]).map(p=>{
+    const health=healthOf(p);
+    const aff=p.affiliate_payouts===undefined||p.affiliate_payouts===null?"":`<div><dt>Affiliate payouts</dt><dd>${moneyHtml(p.affiliate_payouts,false)}</dd></div>`;
+    const fine=cardFine(p);
+    const detail=p.detail?`<p class="detail">${esc(p.detail)}</p>`:"";
+    return `<article class="pcard" data-product="${esc(p.id)}">
+      <header>
+        <div><h3>${esc(p.label)}</h3>${detail}</div>
+        <span class="badge ${health.tone}">${esc(health.label)}</span>
+      </header>
+      <p class="cust"><strong>${esc(p.customers)}</strong> customers</p>
+      <dl>
+        <div><dt>Revenue</dt><dd>${moneyHtml(p.revenue,false)}</dd></div>
+        <div><dt>Vendor cost</dt><dd>${moneyHtml(p.vendor_cost,false)}</dd></div>
+        ${aff}
+        <div class="profit"><dt>Profit</dt><dd>${moneyHtml(p.profit,p.profit_pending)}</dd></div>
+      </dl>
+      ${fine?`<p class="fine">${esc(fine)}</p>`:""}
+    </article>`;
+  }).join("");
+  return `<section class="block">
+    <p class="kicker">Lines</p>
+    <h2>Product line status</h2>
+    <div class="cards">${cards}</div>
+  </section>`;
+}
+function failedLabel(iso){return iso?"Failed "+formatShort(iso):"Failed date pending";}
+function statusHTML(data){
+  const rows=data.customer_status||[];
+  const sum=statusSum(data);
+  const unique=data.unique_customers;
+  const mismatch=Number(unique)!==sum
+    ?`<p class="note">These statuses sum to ${esc(sum)}. Unique customers are ${esc(unique)}.</p>`
+    :"";
+  const legend=rows.map(row=>{
+    const color=STATUS_COLOR[row.id]||"#9aa6b2";
+    return `<li><i class="swatch" style="background:${color}"></i>${esc(row.label)}<b>${esc(row.count)}</b></li>`;
+  }).join("");
+  const due=(data.past_due||[]).map(r=>`<div class="due">
+      <div><div class="who">${esc(r.name)}</div><div class="when">${esc(failedLabel(r.failed))}</div></div>
+      <div class="amt">${esc(usd(r.amount))}</div>
+    </div>`).join("");
+  const owedNote=owedTie(data);
+  const listSum=(data.past_due||[]).reduce((s,r)=>s+(cents(r.amount)||0),0);
+  return `<section class="panel">
+    <p class="kicker">Customers</p>
+    <h2>Customer status</h2>
+    <div class="status">
+      <div>
+        <p class="unique"><strong>${esc(unique)}</strong> unique</p>
+        <div class="chart-box status" role="img" aria-label="Stacked bar of customer status counts."><canvas id="statusChart"></canvas></div>
+        <ul class="legend">${legend}</ul>
+        ${mismatch}
+      </div>
+      <div>
+        <h3>Past due</h3>
+        ${due||`<p class="lede">None</p>`}
+        <p class="due-total"><span>Total owed</span><b>${esc(usd(listSum/100))}</b></p>
+        ${owedNote?`<p class="note">${esc(owedNote)}</p>`:""}
+      </div>
+    </div>
+  </section>`;
+}
+function trendHTML(data){
+  const prog=monthProgress(data.as_of);
+  const pct=Math.max(0,Math.min(100,Math.round((prog.day/prog.days)*1000)/10));
+  const count=(data.snapshots||[]).length;
+  return `<section class="panel">
+    <p class="kicker">Through the month</p>
+    <h2>Month progress</h2>
+    <div class="month">
+      <div class="month-top"><span>${esc(prog.label+" "+prog.year)}</span><span>Day ${esc(prog.day)} of ${esc(prog.days)}</span></div>
+      <div class="track" role="img" aria-label="${esc(prog.label+" is on day "+prog.day+" of "+prog.days)}"><div class="fill" style="width:${pct}%"></div></div>
+    </div>
+    <p class="lede">${esc(count)} weekly snapshot${count===1?"":"s"} so far. Blank weeks have no snapshot yet, and they are not zeros.</p>
+    <ul class="legend">
+      <li><i class="swatch" style="background:#8eafc4"></i>Revenue</li>
+      <li><i class="swatch" style="background:#c6a46a"></i>Profit</li>
+    </ul>
+    <div class="chart-box line" role="img" aria-label="Line chart of weekly revenue and profit snapshots."><canvas id="trendChart"></canvas></div>
+  </section>`;
+}
+function buildWeeks(current,history){
+  const keys=mondaysInMonth(current.as_of).slice();
+  const byWeek=new Map();
+  (history||[]).forEach(snap=>{
+    if(!snap||!snap.as_of||!snap.kpis) return;
+    const key=mondayOnOrBefore(snap.as_of);
+    const prev=byWeek.get(key);
+    if(!prev||String(snap.as_of)>String(prev.as_of)) byWeek.set(key,snap);
+  });
+  byWeek.forEach((_,key)=>{ if(keys.indexOf(key)===-1) keys.push(key); });
+  keys.sort();
+  return keys.map(key=>{
+    const snap=byWeek.get(key)||null;
+    return {
+      week:key,
+      label:snap?formatShort(snap.as_of):formatShort(key),
+      snap:snap?snap.as_of:null,
+      revenue:snap?snap.kpis.revenue:null,
+      profit:snap?snap.kpis.profit:null
+    };
+  });
+}
+function axisMoney(value){
+  const v=Number(value);
+  if(!Number.isFinite(v)) return "";
+  if(v===0) return "$0";
+  const abs=Math.abs(v);
+  if(abs>=1000){
+    const n=v/1000;
+    const body=Math.abs(n)>=10?n.toFixed(0):n.toFixed(n%1===0?0:1);
+    return (v<0?"-":"")+"$"+body.replace("-","")+"k";
   }
-  document.getElementById("totals").innerHTML=`<tr>
-    <td>Total</td>
-    <td class="num">${tot.unique_customers!=null&&tot.unique_customers!==""?esc(tot.unique_customers):esc(cust)}${tot.unique_customers!=null&&tot.unique_customers!==""?`<div class="sub">${esc(tot.unique_customers_label||"unique customers")}</div>`:""}</td>
-    <td class="num">${usd(mrr)}</td>
-    <td class="num${totalRisk}">${usd(unpaid)}</td>
-    ${profitTd}
-  </tr>`;
-  const rows=d.arrears||[];
-  document.getElementById("arrears").innerHTML=rows.length
-    ? rows.map(r=>`<tr>
-        <td>${esc(r.name)}</td>
-        <td>${esc(r.products)}</td>
-        <td class="num">${usd(r.total)}</td>
-        <td>${esc(r.last_failed||"")}</td>
-      </tr>`).join("")
-    : `<tr><td colspan="4">None</td></tr>`;
+  return usd(v);
+}
+function chartTooltip(){
+  return {
+    backgroundColor:"#0e1218",
+    borderColor:"rgba(198,164,106,.45)",
+    borderWidth:1,
+    titleColor:"#e6d3ae",
+    bodyColor:"#ebe6dc",
+    padding:10,
+    cornerRadius:8,
+    callbacks:{
+      label(ctx){
+        const raw=ctx.raw;
+        const name=ctx.dataset.label||ctx.label||"Value";
+        if(raw===null||raw===undefined) return name+": pending";
+        return name+": "+usd(raw);
+      }
+    }
+  };
+}
+function chartAnim(){
+  return false;
+}
+function scaleGrid(){
+  return {color:"rgba(243,239,230,.08)",drawTicks:false};
+}
+function dropCharts(){
+  while(charts.length){
+    const chart=charts.pop();
+    try{chart.destroy();}catch(e){}
+  }
+}
+function paintCharts(data,history,chartsReady){
+  if(!chartsReady||!window.Chart){
+    document.querySelectorAll("#app .chart-box").forEach(box=>{
+      const note=document.createElement("p");
+      note.className="chart-missing";
+      note.textContent="The chart could not be loaded.";
+      box.appendChild(note);
+    });
+    return;
+  }
+  Chart.defaults.color="#c8bfb2";
+  Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif';
+  Chart.defaults.font.size=12;
+  const products=data.products||[];
+  charts.push(new Chart(document.getElementById("productChart"),{
+    type:"bar",
+    data:{
+      labels:products.map(p=>p.label),
+      datasets:[
+        {label:"Revenue",data:products.map(p=>p.revenue),backgroundColor:"#8eafc4",borderRadius:4,borderSkipped:false,maxBarThickness:14},
+        {label:"Profit",data:products.map(p=>p.profit_pending?null:p.profit),backgroundColor:"#c6a46a",borderRadius:4,borderSkipped:false,maxBarThickness:14}
+      ]
+    },
+    options:{
+      indexAxis:"y",
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:chartAnim(),
+      plugins:{legend:{display:false},tooltip:chartTooltip()},
+      scales:{
+        y:{grid:{display:false},border:{display:false},ticks:{autoSkip:false,color:"#ebe6dc"}},
+        x:{beginAtZero:true,grace:"6%",grid:scaleGrid(),border:{display:false},ticks:{callback:axisMoney,maxTicksLimit:5}}
+      }
+    }
+  }));
+  const partners=data.partners||[];
+  charts.push(new Chart(document.getElementById("splitChart"),{
+    type:"doughnut",
+    data:{
+      labels:partners.map(p=>p.name),
+      datasets:[{
+        data:partners.map(p=>data.split.shares[p.id].total),
+        backgroundColor:partners.map((p,i)=>partnerColor(p.id,i)),
+        borderColor:"#1a1f27",
+        borderWidth:3,
+        hoverOffset:4
+      }]
+    },
+    options:{
+      cutout:"68%",
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:chartAnim(),
+      plugins:{legend:{display:false},tooltip:chartTooltip()}
+    }
+  }));
+  const statuses=data.customer_status||[];
+  charts.push(new Chart(document.getElementById("statusChart"),{
+    type:"bar",
+    data:{
+      labels:["Customers"],
+      datasets:statuses.map(row=>({
+        label:row.label,
+        data:[row.count],
+        backgroundColor:STATUS_COLOR[row.id]||"#9aa6b2",
+        borderWidth:0,
+        barPercentage:.55
+      }))
+    },
+    options:{
+      indexAxis:"y",
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:chartAnim(),
+      plugins:{legend:{display:false},tooltip:chartTooltip()},
+      scales:{
+        x:{stacked:true,grid:scaleGrid(),border:{display:false},ticks:{precision:0}},
+        y:{stacked:true,display:false}
+      }
+    }
+  }));
+  const weeks=buildWeeks(data,history);
+  charts.push(new Chart(document.getElementById("trendChart"),{
+    type:"line",
+    data:{
+      labels:weeks.map(w=>w.label),
+      datasets:[
+        {label:"Revenue",data:weeks.map(w=>w.revenue),borderColor:"#8eafc4",backgroundColor:"rgba(142,175,196,.14)",pointBackgroundColor:"#8eafc4",pointRadius:4,tension:.25,fill:true,spanGaps:false},
+        {label:"Profit",data:weeks.map(w=>w.profit),borderColor:"#c6a46a",backgroundColor:"rgba(198,164,106,.14)",pointBackgroundColor:"#c6a46a",pointRadius:4,tension:.25,fill:true,spanGaps:false}
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:chartAnim(),
+      plugins:{
+        legend:{display:false},
+        tooltip:Object.assign(chartTooltip(),{
+          callbacks:{
+            title(items){
+              const row=weeks[items[0].dataIndex];
+              return row.snap?"Snapshot "+formatLong(row.snap):"Week of "+row.label;
+            },
+            label(ctx){
+              const raw=ctx.raw;
+              if(raw===null||raw===undefined) return ctx.dataset.label+": pending";
+              return ctx.dataset.label+": "+usd(raw);
+            }
+          }
+        })
+      },
+      scales:{
+        y:{beginAtZero:true,grid:scaleGrid(),border:{display:false},ticks:{callback:axisMoney,maxTicksLimit:5}},
+        x:{grid:{display:false},border:{display:false}}
+      }
+    }
+  }));
+}
+function loadChartJs(){
+  if(window.Chart) return Promise.resolve();
+  return new Promise((resolve,reject)=>{
+    const s=document.createElement("script");
+    s.src="vendor/chart.umd.min.js";
+    s.onload=()=>resolve();
+    s.onerror=()=>reject(new Error("chart"));
+    document.head.appendChild(s);
+  });
+}
+async function fetchJson(url){
+  const res=await fetch(url,{cache:"no-cache"});
+  if(!res.ok) throw new Error(String(res.status));
+  return res.json();
+}
+async function loadHistory(current){
+  const dates=(current.snapshots&&current.snapshots.length)?current.snapshots.slice():[current.as_of];
+  const out=[];
+  for(let i=0;i<dates.length;i++){
+    const date=dates[i];
+    try{
+      out.push(await fetchJson("data/history/"+encodeURIComponent(date)+".json"));
+    }catch(e){
+      if(current.as_of===date) out.push(current);
+    }
+  }
+  out.sort((a,b)=>String(a.as_of).localeCompare(String(b.as_of)));
+  return out;
+}
+async function render(){
+  const root=document.getElementById("dashboard");
+  try{
+    const current=await fetchJson("data/current.json");
+    const history=await loadHistory(current);
+    let chartsReady=true;
+    try{await loadChartJs();}catch(e){chartsReady=false;}
+    dropCharts();
+    document.getElementById("top").innerHTML=headerHTML(current);
+    root.innerHTML=kpisHTML(current)+tieHTML(current)+splitHTML(current)+productChartHTML()+productCardsHTML(current)+statusHTML(current)+trendHTML(current);
+    const foot=document.getElementById("foot");
+    if(foot) foot.textContent=current.company||"";
+    try{paintCharts(current,history,chartsReady);}
+    catch(err){
+      document.querySelectorAll("#app .chart-box").forEach(box=>{
+        if(box.querySelector(".chart-missing")) return;
+        const note=document.createElement("p");
+        note.className="chart-missing";
+        note.textContent="The chart could not be loaded.";
+        box.appendChild(note);
+      });
+    }
+    root.dataset.rendered="1";
+  }catch(e){
+    root.textContent="The dashboard data could not be loaded.";
+  }
 }
 if(sessionStorage.getItem("sbs_dash_ok")==="1") openApp();
 </script>
