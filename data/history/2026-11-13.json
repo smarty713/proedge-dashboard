@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "as_of": "2026-11-13",
+  "last_updated_label": "Last updated Nov 13, 2026 6:45 AM ET",
+  "company": "SP Smart Business Solutions LLC",
+  "partners": [
+    {"id": "smarty", "name": "Smarty"},
+    {"id": "tom", "name": "Tom Kelly"}
+  ],
+  "split_rule": {
+    "base_partner": "smarty",
+    "base_amount": 4000,
+    "remainder_share": 0.5,
+    "carryforward": false
+  },
+  "kpis": {
+    "revenue": 17580.16,
+    "profit": 11414.54,
+    "run_rate_note": "Subscription run-rate $11,414.54 (excludes GHL wallet recharges ~$10K/mo and iList $2,794)",
+    "expected_cash_profit": 6818.89,
+    "expected_cash_label": "Expected November cash profit",
+    "expected_cash_best": 8638.42,
+    "expected_cash_worst": 2039.43,
+    "hero_note": "Expected includes BPO partner revenue $2,012 (net $1,953.35) due Nov 15; best also includes Chris $198 (net $191.96). Not yet received.",
+    "accrual_view": "Accrual view: best $8,918.01, expected $7,098.48, worst $3,205.63.",
+    "cash_profit": 12302.39,
+    "cash_profit_label": "October cash profit (TD actual)",
+    "affiliate_payouts": 886.61,
+    "affiliate_note": "Comes out of CRM",
+    "owed": 675
+  },
+  "charge_timing": {
+    "label": "Charge timing",
+    "text": "51% of charges days 1-15, 49% days 16-31 (Oct actual)"
+  },
+  "split_basis": "Based on expected November cash profit",
+  "split": {
+    "profit": 6818.89,
+    "center_label": "Expected",
+    "base": 4000,
+    "remainder": 2818.89,
+    "shares": {
+      "smarty": {"base": 4000, "remainder": 1409.44, "total": 5409.44, "drawn": 350, "remaining": 5059.44},
+      "tom": {"base": 0, "remainder": 1409.45, "total": 1409.45, "drawn": 500, "remaining": 909.45}
+    },
+    "cases": [
+      {"id": "best", "label": "Best", "profit": 8638.42, "smarty": 6319.21, "tom": 2319.21},
+      {"id": "worst", "label": "Worst", "profit": 2039.43, "smarty": 2039.43, "tom": 0}
+    ]
+  },
+  "cash_runway": {
+    "balance": 382.93,
+    "balance_label": "TD balance",
+    "balance_note": "Nov 12",
+    "expected_low": 382.93,
+    "expected_low_label": "Expected low",
+    "expected_low_note": "Nov 12. Nov 16 balance $2,031.98 after iList.",
+    "worst_low": -2392.78,
+    "worst_low_label": "Worst, no partner revenue",
+    "worst_low_note": "Fri Nov 20",
+    "worst_with_bpo": -439.43,
+    "worst_with_bpo_label": "Worst plus BPO",
+    "worst_with_bpo_note": "Nov 20",
+    "payout_note": "If BPO pays Nov 16 instead of the 15th, the Nov 16 low goes back to $78.63."
+  },
+  "partner_revenue": {
+    "title": "Partner revenue",
+    "kicker": "Enterprise partners",
+    "status": "Pending",
+    "status_line": "Due Nov 15. Lands in TD Mon Nov 16 via Stripe payout.",
+    "partners": [
+      {
+        "name": "BPO",
+        "contact": "Joban Brown",
+        "expected": 2012,
+        "net": 1953.35,
+        "note": "Amount moves with active users.",
+        "history": [
+          {"date": "2026-08-14", "amount": 2450},
+          {"date": "2026-09-15", "amount": 2589},
+          {"date": "2026-10-15", "amount": 2196}
+        ]
+      },
+      {
+        "name": "Chris DiCristo",
+        "expected": 198,
+        "net": 191.96,
+        "unconfirmed": true,
+        "history": [
+          {"label": "Aug", "amount": 297},
+          {"label": "Sep", "amount": 416},
+          {"label": "Oct", "amount": null}
+        ]
+      }
+    ]
+  },
+  "forecast_assumptions": [
+    "Renewal collection rate 91.9% expected (93.0% best, 88.2% worst).",
+    "GHL wallet recharges about $229/day. GHL bills continuously as the wallet depletes; there's no month-end tru-up.",
+    "November GHL total expected $10,449.71."
+  ],
+  "products": [
+    {
+      "id": "crm",
+      "label": "CRM",
+      "customers": 71,
+      "revenue": 10005.33,
+      "vendor_cost": 536.76,
+      "vendor_cost_note": "GHL Founders Subscription",
+      "affiliate_payouts": 886.61,
+      "profit": 8581.96,
+      "profit_pending": false,
+      "note": "Affiliate payouts come out of CRM."
+    },
+    {
+      "id": "listing_to_leads",
+      "label": "Listing to Leads",
+      "customers": 33,
+      "revenue": 876.64,
+      "vendor_cost": 750,
+      "profit": 126.64,
+      "profit_pending": false
+    },
+    {
+      "id": "seller_assist",
+      "label": "Seller Assist",
+      "detail": "Includes iBuyer Offers",
+      "customers": 60,
+      "count_label": "paying customers",
+      "revenue": 4169.69,
+      "vendor_cost": 2793,
+      "vendor_cost_note": "57 × $49",
+      "profit": 1376.69,
+      "profit_pending": false,
+      "note": "3 payers without a vendor seat (pending review). The vendor list's 2 internal accounts aren't customers."
+    },
+    {
+      "id": "seller_lead_engine",
+      "label": "Seller Lead Engine",
+      "customers": 21,
+      "revenue": 1870.50,
+      "vendor_cost": 935.25,
+      "vendor_cost_note": "50% share",
+      "profit": 935.25,
+      "profit_pending": false
+    },
+    {
+      "id": "service_plans",
+      "label": "Service Plans",
+      "customers": 2,
+      "revenue": 394.00,
+      "vendor_cost": 0,
+      "profit": 394.00,
+      "profit_pending": false
+    },
+    {
+      "id": "ai_employee",
+      "label": "AI Employee",
+      "customers": 19,
+      "revenue": 255.00,
+      "vendor_cost": null,
+      "profit": null,
+      "profit_pending": true,
+      "note": "3 subscription, 15 wallet-funded, 1 own. Subscription revenue only. Wallet-funded share is not isolable."
+    },
+    {
+      "id": "saas_seats",
+      "label": "$1 SaaS seats",
+      "customers": 9,
+      "count_label": "seats",
+      "revenue": 9.00,
+      "vendor_cost": null,
+      "profit": null,
+      "profit_pending": true,
+      "note": "9 seats × $1."
+    }
+  ],
+  "unique_customers": 97,
+  "unique_customer_note": "Excludes Robert Weichelt and Jeffery B Jewelers. Includes Mark States (Seller Assist, $82.50/mo). VRG merged into Cee Rhodes.",
+  "customer_status": [
+    {"id": "paying", "label": "Paying", "count": 85},
+    {"id": "past_due", "label": "Past due", "count": 3},
+    {"id": "not_billed", "label": "Not billed", "count": 9}
+  ],
+  "past_due": [
+    {"name": "Giancanelli", "amount": 218, "failed": "2026-11-12"},
+    {"name": "Krautbauer", "amount": 248, "failed": "2026-11-11"},
+    {"name": "Guerrero", "amount": 209, "failed": null}
+  ],
+  "weekly_actuals_title": "Last 4 weeks + current week",
+  "month_cash_profit_to_date": -362.92,
+  "month_cash_profit_label": "Nov 1-12 cash profit to date",
+  "weekly_actuals": [
+    {"week_start": "2026-10-12", "income": 8854.31, "expense": 4933.81, "profit": 3920.50, "distributions": 2300.00, "partial": false},
+    {"week_start": "2026-10-19", "income": 7137.20, "expense": 3346.56, "profit": 3790.64, "distributions": 2500.00, "partial": false},
+    {"week_start": "2026-10-26", "income": 6335.10, "expense": 2232.87, "profit": 4102.23, "distributions": 4000.00, "partial": false},
+    {"week_start": "2026-11-02", "income": 5476.53, "expense": 5015.12, "profit": 461.41, "distributions": 2250.00, "partial": false},
+    {"week_start": "2026-11-09", "income": 1922.04, "expense": 2746.37, "profit": -824.33, "distributions": 600.00, "partial": true, "through": "2026-11-12", "expense_note": "Expense is $1,580.17 operating plus $1,166.20 affiliate payouts paid via Venmo/PayPal (October catch-up)."}
+  ],
+  "snapshots": ["2026-11-12", "2026-11-13"]
+}

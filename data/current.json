@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "as_of": "2026-11-12",
-  "last_updated_label": "Last updated Nov 12, 2026 9 PM ET",
+  "as_of": "2026-11-13",
+  "last_updated_label": "Last updated Nov 13, 2026 6:45 AM ET",
   "company": "SP Smart Business Solutions LLC",
   "partners": [
     {"id": "smarty", "name": "Smarty"},
@@ -17,10 +17,12 @@
     "revenue": 17580.16,
     "profit": 11414.54,
     "run_rate_note": "Subscription run-rate $11,414.54 (excludes GHL wallet recharges ~$10K/mo and iList $2,794)",
-    "expected_cash_profit": 4865.54,
+    "expected_cash_profit": 6818.89,
     "expected_cash_label": "Expected November cash profit",
-    "expected_cash_best": 6493.11,
+    "expected_cash_best": 8638.42,
     "expected_cash_worst": 2039.43,
+    "hero_note": "Expected includes BPO partner revenue $2,012 (net $1,953.35) due Nov 15; best also includes Chris $198 (net $191.96). Not yet received.",
+    "accrual_view": "Accrual view: best $8,918.01, expected $7,098.48, worst $3,205.63.",
     "cash_profit": 12302.39,
     "cash_profit_label": "October cash profit (TD actual)",
     "affiliate_payouts": 886.61,
@@ -33,30 +35,64 @@
   },
   "split_basis": "Based on expected November cash profit",
   "split": {
-    "profit": 4865.54,
+    "profit": 6818.89,
     "center_label": "Expected",
     "base": 4000,
-    "remainder": 865.54,
+    "remainder": 2818.89,
     "shares": {
-      "smarty": {"base": 4000, "remainder": 432.77, "total": 4432.77, "drawn": 350, "remaining": 4082.77},
-      "tom": {"base": 0, "remainder": 432.77, "total": 432.77, "drawn": 500, "remaining": -67.23}
+      "smarty": {"base": 4000, "remainder": 1409.44, "total": 5409.44, "drawn": 350, "remaining": 5059.44},
+      "tom": {"base": 0, "remainder": 1409.45, "total": 1409.45, "drawn": 500, "remaining": 909.45}
     },
     "cases": [
-      {"id": "best", "label": "Best", "profit": 6493.11, "smarty": 5246.56, "tom": 1246.56},
+      {"id": "best", "label": "Best", "profit": 8638.42, "smarty": 6319.21, "tom": 2319.21},
       {"id": "worst", "label": "Worst", "profit": 2039.43, "smarty": 2039.43, "tom": 0}
     ]
   },
   "cash_runway": {
     "balance": 382.93,
     "balance_label": "TD balance",
-    "balance_note": "Nov 12, after the $446.93 instant payout",
-    "expected_low": 78.63,
+    "balance_note": "Nov 12",
+    "expected_low": 382.93,
     "expected_low_label": "Expected low",
-    "expected_low_note": "Mon Nov 16, after the iList Seller Assist charge (~$2,794)",
+    "expected_low_note": "Nov 12. Nov 16 balance $2,031.98 after iList.",
     "worst_low": -2392.78,
-    "worst_low_label": "Worst low",
-    "worst_low_note": "Nov 20. Negative Nov 16-24.",
-    "payout_note": "Assumes the $1,454.07 Stripe payout lands Nov 13. If it does not, a $1,375.44 deposit is needed."
+    "worst_low_label": "Worst, no partner revenue",
+    "worst_low_note": "Fri Nov 20",
+    "worst_with_bpo": -439.43,
+    "worst_with_bpo_label": "Worst plus BPO",
+    "worst_with_bpo_note": "Nov 20",
+    "payout_note": "If BPO pays Nov 16 instead of the 15th, the Nov 16 low goes back to $78.63."
+  },
+  "partner_revenue": {
+    "title": "Partner revenue",
+    "kicker": "Enterprise partners",
+    "status": "Pending",
+    "status_line": "Due Nov 15. Lands in TD Mon Nov 16 via Stripe payout.",
+    "partners": [
+      {
+        "name": "BPO",
+        "contact": "Joban Brown",
+        "expected": 2012,
+        "net": 1953.35,
+        "note": "Amount moves with active users.",
+        "history": [
+          {"date": "2026-08-14", "amount": 2450},
+          {"date": "2026-09-15", "amount": 2589},
+          {"date": "2026-10-15", "amount": 2196}
+        ]
+      },
+      {
+        "name": "Chris DiCristo",
+        "expected": 198,
+        "net": 191.96,
+        "unconfirmed": true,
+        "history": [
+          {"label": "Aug", "amount": 297},
+          {"label": "Sep", "amount": 416},
+          {"label": "Oct", "amount": null}
+        ]
+      }
+    ]
   },
   "forecast_assumptions": [
     "Renewal collection rate 91.9% expected (93.0% best, 88.2% worst).",
@@ -161,5 +197,5 @@
     {"week_start": "2026-11-02", "income": 5476.53, "expense": 5015.12, "profit": 461.41, "distributions": 2250.00, "partial": false},
     {"week_start": "2026-11-09", "income": 1922.04, "expense": 2746.37, "profit": -824.33, "distributions": 600.00, "partial": true, "through": "2026-11-12", "expense_note": "Expense is $1,580.17 operating plus $1,166.20 affiliate payouts paid via Venmo/PayPal (October catch-up)."}
   ],
-  "snapshots": ["2026-11-12"]
+  "snapshots": ["2026-11-12", "2026-11-13"]
 }

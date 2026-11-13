@@ -33,7 +33,10 @@ html:has(#app:not([hidden])){background:#12161c}
 #app .updated{margin:8px 0 0;color:#a39b8d;font-size:.78rem}
 #app .range{margin:8px 0 0;color:#c8bfb2;font-size:.84rem}
 #app .secondary{margin:6px 0 0;color:#8d867b;font-size:.78rem;line-height:1.35}
-#app .runway{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:12px;margin-top:14px}
+#app .hero-note{margin:12px 0 0;color:#c8bfb2;font-size:.84rem;max-width:82ch;line-height:1.45}
+#app .pcard-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-end}
+#app .hist{display:inline-block;margin:2px 12px 0 0;white-space:nowrap}
+#app .runway{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
 #app .runway article{background:#12161c;border-radius:14px;padding:14px;border:1px solid rgba(243,239,230,.08)}
 #app .runway .label{margin:0;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#c8bfb2}
 #app .runway .value{margin:8px 0 0;font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.65rem;letter-spacing:-.02em}
@@ -352,7 +355,7 @@ function splitOk(data){
   if(!basePartner||cents(basePartner.base)!==cents(split.base)) return false;
   if(rule.remainder_share===0.5){
     const parts=ids.map(id=>cents(split.shares[id].remainder));
-    for(let i=1;i<parts.length;i++) if(parts[i]!==parts[0]) return false;
+    for(let i=1;i<parts.length;i++) if(Math.abs(parts[i]-parts[0])>1) return false;
   }
   return true;
 }
@@ -400,6 +403,8 @@ function kpisHTML(data){
       <article class="kpi" data-kpi="affiliate"><p class="label">Affiliate payouts</p><p class="value">${esc(usd(k.affiliate_payouts))}</p><p class="hint">${esc(k.affiliate_note||"")}</p></article>
       <article class="kpi owed" data-kpi="owed"><p class="label">Owed</p><p class="value">${esc(usd(k.owed))}</p><p class="hint">${esc(owedHint)}</p></article>
     </div>
+    ${k.hero_note?`<p class="hero-note">${esc(k.hero_note)}</p>`:""}
+    ${k.accrual_view?`<p class="assume">${esc(k.accrual_view)}</p>`:""}
     ${timing}
   </section>`;
 }
@@ -513,9 +518,42 @@ function runwayHTML(data){
       <article><p class="label">${esc(r.balance_label||"TD balance")}</p><p class="value">${esc(usd(r.balance))}</p><p class="hint">${esc(r.balance_note||"")}</p></article>
       <article><p class="label">${esc(r.expected_low_label||"Expected low")}</p><p class="value">${esc(usd(r.expected_low))}</p><p class="hint">${esc(r.expected_low_note||"")}</p></article>
       <article class="tight"><p class="label">${esc(r.worst_low_label||"Worst low")}</p><p class="value">${esc(usd(r.worst_low))}</p><p class="hint">${esc(r.worst_low_note||"")}</p></article>
+      ${r.worst_with_bpo==null?"":`<article><p class="label">${esc(r.worst_with_bpo_label||"Worst plus BPO")}</p><p class="value">${esc(usd(r.worst_with_bpo))}</p><p class="hint">${esc(r.worst_with_bpo_note||"")}</p></article>`}
     </div>
     ${r.payout_note?`<p class="lede">${esc(r.payout_note)}</p>`:""}
     ${assumptions?`<p class="assume">${assumptions}</p>`:""}
+  </section>`;
+}
+function historyBits(items){
+  return (items||[]).map(h=>{
+    const when=h.date?formatShort(h.date):(h.label||"");
+    const amt=h.amount===null||h.amount===undefined?"none":usd(h.amount);
+    return `<span class="hist">${esc(amt)} ${esc(when)}</span>`;
+  }).join("");
+}
+function partnerRevenueHTML(data){
+  const block=data.partner_revenue;
+  if(!block||!(block.partners||[]).length) return "";
+  const cards=block.partners.map(p=>{
+    const hist=historyBits(p.history);
+    return `<article class="pcard" data-partner-revenue="${esc(p.name)}">
+      <header><div><h3>${esc(p.name)}</h3>${p.contact?`<p class="detail">${esc(p.contact)}</p>`:""}</div>${p.unconfirmed?`<span class="badge pending">Unconfirmed</span>`:""}</header>
+      <p class="cust"><strong>${esc(usd(p.expected))}</strong> expected</p>
+      ${p.net!=null?`<p class="fine">Net ${esc(usd(p.net))}</p>`:""}
+      ${p.note?`<p class="fine">${esc(p.note)}</p>`:""}
+      ${hist?`<p class="fine hist-row">${hist}</p>`:""}
+    </article>`;
+  }).join("");
+  return `<section class="block" id="partner-revenue">
+    <div class="pcard-head">
+      <div>
+        <p class="kicker">${esc(block.kicker||"Enterprise partners")}</p>
+        <h2>${esc(block.title||"Partner revenue")}</h2>
+      </div>
+      ${block.status?`<span class="badge pending">${esc(block.status)}</span>`:""}
+    </div>
+    ${block.status_line?`<p class="lede">${esc(block.status_line)}</p>`:""}
+    <div class="cards">${cards}</div>
   </section>`;
 }
 function productChartHTML(){
@@ -975,7 +1013,7 @@ async function render(){
     try{await loadChartJs();}catch(e){chartsReady=false;}
     dropCharts();
     document.getElementById("top").innerHTML=headerHTML(current);
-    root.innerHTML=kpisHTML(current)+tieHTML(current)+runwayHTML(current)+splitHTML(current)+productChartHTML()+productCardsHTML(current)+statusHTML(current)+trendHTML(current)+weeklyActualsHTML(current);
+    root.innerHTML=kpisHTML(current)+tieHTML(current)+partnerRevenueHTML(current)+runwayHTML(current)+splitHTML(current)+productChartHTML()+productCardsHTML(current)+statusHTML(current)+trendHTML(current)+weeklyActualsHTML(current);
     const foot=document.getElementById("foot");
     if(foot) foot.textContent=current.company||"";
     try{paintCharts(current,history,chartsReady);}
