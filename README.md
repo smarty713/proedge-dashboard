@@ -129,6 +129,8 @@ AI Employee profit and vendor cost are pending. An unconfirmed cost in the previ
 
 Seller Assist has 60 paying customers. Vendor cost is 57 billable seats at $49, which is $2,793. Three payers have no vendor seat yet. Two internal accounts on the vendor list are not customers.
 
-`weekly_actuals` holds TD Bank weeks with `week_start`, `income`, `expense`, `profit`, `distributions`, and `partial`. The chart draws income and expense as grouped bars and profit as a line. A partial week is hatched, and its label reads partial through the `through` date. Distributions render on a separate row labeled Transfers to CK (unconfirmed). The week of Nov 9 is partial through Nov 10.
+`weekly_actuals` holds TD Bank weeks with `week_start`, `income`, `expense`, `profit`, `distributions`, and `partial`. The chart draws income and expense as grouped bars and profit as a line. A partial week is hatched, and its label reads partial through the `through` date. Distributions render on a separate row labeled Transfers to CK (unconfirmed). They are not part of expense. The week of Nov 9 is partial through Nov 12.
+
+The partner split uses expected November cash profit. `kpis.profit` remains the subscription run-rate, which is what the product lines add up to. `kpis.expected_cash_profit` is the headline cash figure.
 
 Do not put a customer price-tier split on the page.

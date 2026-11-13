@@ -28,7 +28,21 @@ html:has(#app:not([hidden])){background:#12161c}
 #app h2{margin:0;font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.45rem;font-weight:500;letter-spacing:-.02em}
 #app h3{margin:0;font-size:1rem;font-weight:600}
 #app .subhead{margin:8px 0 0;color:#c8bfb2}
-#app .asof{margin:0;border:1px solid rgba(198,164,106,.5);color:#e6d3ae;border-radius:999px;padding:8px 14px;font-size:.85rem;white-space:nowrap}
+#app .asof-wrap{text-align:right}
+#app .asof{margin:0;border:1px solid rgba(198,164,106,.5);color:#e6d3ae;border-radius:999px;padding:8px 14px;font-size:.85rem;white-space:nowrap;display:inline-block}
+#app .updated{margin:8px 0 0;color:#a39b8d;font-size:.78rem}
+#app .range{margin:8px 0 0;color:#c8bfb2;font-size:.84rem}
+#app .secondary{margin:6px 0 0;color:#8d867b;font-size:.78rem;line-height:1.35}
+#app .runway{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:12px;margin-top:14px}
+#app .runway article{background:#12161c;border-radius:14px;padding:14px;border:1px solid rgba(243,239,230,.08)}
+#app .runway .label{margin:0;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#c8bfb2}
+#app .runway .value{margin:8px 0 0;font-family:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;font-size:1.65rem;letter-spacing:-.02em}
+#app .runway .hint{margin:8px 0 0;color:#c8bfb2;font-size:.82rem}
+#app .runway .tight .value{color:#e08b84}
+#app .assume{margin:12px 0 0;color:#a39b8d;font-size:.82rem;max-width:78ch;line-height:1.45}
+#app .cases{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+#app .draws{margin-top:16px}
+#app .over{color:#e08b84}
 #app .kicker{margin:0 0 4px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#c6a46a}
 #app .lede{margin:8px 0 0;color:#c8bfb2;font-size:.92rem;max-width:68ch}
 #app .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:22px}
@@ -121,12 +135,13 @@ html:has(#app:not([hidden])){background:#12161c}
   #app .kpis{grid-template-columns:1fr 1fr}
   #app .kpis .kpi{grid-column:auto}
   #app .kpi .value{font-size:1.5rem}
-  #app .split,#app .status{grid-template-columns:1fr}
+  #app .split,#app .status,#app .runway,#app .cases{grid-template-columns:1fr}
   #app .cards{grid-template-columns:1fr 1fr}
 }
 @media (max-width:560px){
   #app .wrap{padding:18px 14px 48px}
   #app .top{flex-direction:column;align-items:flex-start}
+  #app .asof-wrap{text-align:left}
   #app h1{font-size:1.75rem}
   #app .kpis,#app .cards,#app .partners{grid-template-columns:1fr}
   #app .kpis .kpi{grid-column:auto}
@@ -326,7 +341,8 @@ function splitOk(data){
     total+=t; baseSum+=b; remSum+=r;
   }
   if(cents(split.profit)===null||total!==cents(split.profit)) return false;
-  if(!data.kpis||cents(data.kpis.profit)!==cents(split.profit)) return false;
+  const basis=data.kpis&&data.kpis.expected_cash_profit!=null?data.kpis.expected_cash_profit:(data.kpis&&data.kpis.profit);
+  if(cents(basis)!==cents(split.profit)) return false;
   if(baseSum+remSum!==cents(split.profit)) return false;
   if(cents(split.remainder)!==remSum||cents(split.base)!==baseSum) return false;
   if(cents(split.profit)-cents(split.base)!==cents(split.remainder)) return false;
@@ -354,7 +370,10 @@ function headerHTML(data){
       <h1>Partner dashboard</h1>
       <p class="subhead">${esc(legal)}</p>
     </div>
-    <p class="asof">As of <time datetime="${esc(data.as_of)}">${esc(formatLong(data.as_of))}</time></p>`;
+    <div class="asof-wrap">
+      <p class="asof">As of <time datetime="${esc(data.as_of)}">${esc(formatLong(data.as_of))}</time></p>
+      ${data.last_updated_label?`<p class="updated">${esc(data.last_updated_label)}</p>`:""}
+    </div>`;
 }
 function kpisHTML(data){
   const k=data.kpis||{};
@@ -364,13 +383,20 @@ function kpisHTML(data){
   if(k.profit_note) profitHint=k.profit_note;
   const owedHint=((data.past_due||[]).length)+" past due";
   const cash=k.cash_profit===null||k.cash_profit===undefined?"":`<article class="kpi cash" data-kpi="cash"><p class="label">${esc(k.cash_profit_label||"Cash profit")}</p><p class="value">${esc(usd(k.cash_profit))}</p></article>`;
-  const timing=data.charge_timing&&data.charge_timing.text?`<p class="mini"><strong>${esc(data.charge_timing.label||"Charge timing")}</strong> ${esc(data.charge_timing.text)}</p>`:""
+  const timing=data.charge_timing&&data.charge_timing.text?`<p class="mini"><strong>${esc(data.charge_timing.label||"Charge timing")}</strong> ${esc(data.charge_timing.text)}</p>`:"";
+  let profitCard;
+  if(k.expected_cash_profit!=null){
+    const range="Best "+usd(k.expected_cash_best)+" · Worst "+usd(k.expected_cash_worst);
+    profitCard=`<article class="kpi" data-kpi="expected"><p class="label">${esc(k.expected_cash_label||"Expected November cash profit")}</p><p class="value">${esc(usd(k.expected_cash_profit))}</p><p class="range">${esc(range)}</p>${k.run_rate_note?`<p class="secondary">${esc(k.run_rate_note)}</p>`:""}</article>`;
+  }else{
+    profitCard=`<article class="kpi" data-kpi="profit"><p class="label">${esc(k.profit_label||"Total profit")}</p><p class="value">${esc(usd(k.profit))}</p><p class="hint">${esc(profitHint)}</p></article>`;
+  }
   return `<section>
     <p class="kicker">${esc(monthProgress(data.as_of).label+" "+monthProgress(data.as_of).year)}</p>
     <div class="kpis">
-      <article class="kpi" data-kpi="revenue"><p class="label">Total revenue</p><p class="value">${esc(usd(k.revenue))}</p></article>
-      <article class="kpi" data-kpi="profit"><p class="label">${esc(k.profit_label||"Total profit")}</p><p class="value">${esc(usd(k.profit))}</p><p class="hint">${esc(profitHint)}</p></article>
+      ${profitCard}
       ${cash}
+      <article class="kpi" data-kpi="revenue"><p class="label">Total revenue</p><p class="value">${esc(usd(k.revenue))}</p></article>
       <article class="kpi" data-kpi="affiliate"><p class="label">Affiliate payouts</p><p class="value">${esc(usd(k.affiliate_payouts))}</p><p class="hint">${esc(k.affiliate_note||"")}</p></article>
       <article class="kpi owed" data-kpi="owed"><p class="label">Owed</p><p class="value">${esc(usd(k.owed))}</p><p class="hint">${esc(owedHint)}</p></article>
     </div>
@@ -447,6 +473,49 @@ function splitHTML(data){
       <ul class="formula-key">${key}</ul>
       <p class="rule">${esc(ruleText(data))}</p>
     </div>
+    ${casesHTML(data)}
+    ${drawsHTML(data)}
+  </section>`;
+}
+function casesHTML(data){
+  const cases=(data.split&&data.split.cases)||[];
+  if(!cases.length) return "";
+  const cards=cases.map(c=>`<article class="partner"><p class="label">${esc(c.label)}</p><p class="hint">${esc(nameOf(data,"smarty"))} ${esc(usd(c.smarty))} · ${esc(nameOf(data,"tom"))} ${esc(usd(c.tom))}</p><p class="fine">On ${esc(usd(c.profit))} profit</p></article>`).join("");
+  return `<div class="cases">${cards}</div>`;
+}
+function shareLeft(remaining){
+  const c=cents(remaining);
+  if(c===null) return "pending";
+  if(c<0) return usd(Math.abs(c)/100)+" over his share";
+  return usd(c/100)+" left";
+}
+function drawsHTML(data){
+  const shares=data.split&&data.split.shares;
+  if(!shares) return "";
+  const partners=data.partners||[];
+  const shown=partners.filter(p=>shares[p.id]&&shares[p.id].drawn!=null);
+  if(!shown.length) return "";
+  const cards=shown.map((p,i)=>{
+    const s=shares[p.id];
+    const over=cents(s.remaining)<0;
+    return `<article class="partner" style="box-shadow:inset 3px 0 0 ${partnerColor(p.id,i)}"><p class="label">${esc(p.name)}</p><p class="hint">Drawn ${esc(usd(s.drawn))}</p><p class="value${over?" over":""}">${esc(shareLeft(s.remaining))}</p></article>`;
+  }).join("");
+  return `<div class="draws"><p class="kicker">Draws to date vs expected share</p><div class="partners">${cards}</div></div>`;
+}
+function runwayHTML(data){
+  const r=data.cash_runway;
+  if(!r) return "";
+  const assumptions=(data.forecast_assumptions||[]).map(line=>esc(line)).join(" ");
+  return `<section class="panel" id="runway">
+    <p class="kicker">Cash</p>
+    <h2>Cash runway</h2>
+    <div class="runway">
+      <article><p class="label">${esc(r.balance_label||"TD balance")}</p><p class="value">${esc(usd(r.balance))}</p><p class="hint">${esc(r.balance_note||"")}</p></article>
+      <article><p class="label">${esc(r.expected_low_label||"Expected low")}</p><p class="value">${esc(usd(r.expected_low))}</p><p class="hint">${esc(r.expected_low_note||"")}</p></article>
+      <article class="tight"><p class="label">${esc(r.worst_low_label||"Worst low")}</p><p class="value">${esc(usd(r.worst_low))}</p><p class="hint">${esc(r.worst_low_note||"")}</p></article>
+    </div>
+    ${r.payout_note?`<p class="lede">${esc(r.payout_note)}</p>`:""}
+    ${assumptions?`<p class="assume">${assumptions}</p>`:""}
   </section>`;
 }
 function productChartHTML(){
@@ -582,12 +651,17 @@ function weeklyActualsHTML(data){
     </section>`;
   }
   const note=data.weekly_actuals_note?`<p class="lede">${esc(data.weekly_actuals_note)}</p>`:"";
+  const toDate=data.month_cash_profit_to_date;
+  const toDateLine=toDate===null||toDate===undefined?"":`<p class="lede">${esc(data.month_cash_profit_label||"Cash profit to date")} ${esc(usd(toDate))}</p>`;
+  const expenseNotes=rows.filter(r=>r&&r.expense_note).map(r=>`<p class="lede">${esc(formatShort(r.week_start))}: ${esc(r.expense_note)}</p>`).join("");
   const transfers=rows.filter(r=>r&&r.distributions!==null&&r.distributions!==undefined&&r.distributions!=="");
   const transferRow=transfers.length?`<div class="xfer"><table><thead><tr><th></th>${transfers.map(r=>`<th>${weekHead(r)}</th>`).join("")}</tr></thead><tbody><tr><th>Transfers to CK (unconfirmed)</th>${transfers.map(r=>`<td>${esc(usd(r.distributions))}</td>`).join("")}</tr></tbody></table></div>`:"";
   return `<section class="panel" id="weekly-actuals">
     <p class="kicker">TD Bank</p>
     <h2>${esc(title)}</h2>
     ${note}
+    ${toDateLine}
+    ${expenseNotes}
     <ul class="legend">
       <li><i class="swatch" style="background:#8eafc4"></i>Income</li>
       <li><i class="swatch" style="background:#e08b84"></i>Expense</li>
@@ -764,6 +838,19 @@ function paintCharts(data,history,chartsReady){
   }));
   const actuals=weeklyRows(data).filter(r=>r&&r.week_start);
   const weeklyCanvas=document.getElementById("weeklyChart");
+  const weeklyBound=(()=>{
+    let min=0, max=0;
+    actuals.forEach(r=>{
+      [r.income,r.expense,r.profit].forEach(v=>{
+        const n=Number(v);
+        if(!Number.isFinite(n)) return;
+        if(n<min) min=n;
+        if(n>max) max=n;
+      });
+    });
+    const span=Math.max(max-min,1);
+    return {min:min<0?min-span*0.12:0, max:max+span*0.06};
+  })();
   if(weeklyCanvas&&weeklyReady(actuals)){
     charts.push(new Chart(weeklyCanvas,{
       type:"bar",
@@ -807,7 +894,7 @@ function paintCharts(data,history,chartsReady){
           }
         },
         scales:{
-          y:{beginAtZero:true,grid:scaleGrid(),border:{display:false},ticks:{callback:axisMoney,maxTicksLimit:5}},
+          y:{min:weeklyBound.min,max:weeklyBound.max,grid:scaleGrid(),border:{display:false},ticks:{callback:axisMoney,maxTicksLimit:6}},
           x:{grid:{display:false},border:{display:false},ticks:{maxRotation:0,autoSkip:false,font:{size:11}}}
         }
       }
@@ -888,7 +975,7 @@ async function render(){
     try{await loadChartJs();}catch(e){chartsReady=false;}
     dropCharts();
     document.getElementById("top").innerHTML=headerHTML(current);
-    root.innerHTML=kpisHTML(current)+tieHTML(current)+splitHTML(current)+productChartHTML()+productCardsHTML(current)+statusHTML(current)+trendHTML(current)+weeklyActualsHTML(current);
+    root.innerHTML=kpisHTML(current)+tieHTML(current)+runwayHTML(current)+splitHTML(current)+productChartHTML()+productCardsHTML(current)+statusHTML(current)+trendHTML(current)+weeklyActualsHTML(current);
     const foot=document.getElementById("foot");
     if(foot) foot.textContent=current.company||"";
     try{paintCharts(current,history,chartsReady);}

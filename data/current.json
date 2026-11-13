@@ -1,6 +1,7 @@
 {
   "schema": 1,
   "as_of": "2026-11-12",
+  "last_updated_label": "Last updated Nov 12, 2026 9 PM ET",
   "company": "SP Smart Business Solutions LLC",
   "partners": [
     {"id": "smarty", "name": "Smarty"},
@@ -15,8 +16,11 @@
   "kpis": {
     "revenue": 17580.16,
     "profit": 11414.54,
-    "profit_label": "Subscription run-rate profit (monthly)",
-    "profit_note": "Not cash. Excludes GHL wallet/usage, VA payroll, software, bank fees.",
+    "run_rate_note": "Subscription run-rate $11,414.54 (excludes GHL wallet recharges ~$10K/mo and iList $2,794)",
+    "expected_cash_profit": 4865.54,
+    "expected_cash_label": "Expected November cash profit",
+    "expected_cash_best": 6493.11,
+    "expected_cash_worst": 2039.43,
     "cash_profit": 12302.39,
     "cash_profit_label": "October cash profit (TD actual)",
     "affiliate_payouts": 886.61,
@@ -27,17 +31,38 @@
     "label": "Charge timing",
     "text": "51% of charges days 1-15, 49% days 16-31 (Oct actual)"
   },
-  "split_basis": "Based on subscription run-rate",
+  "split_basis": "Based on expected November cash profit",
   "split": {
-    "profit": 11414.54,
-    "center_label": "Run-rate",
+    "profit": 4865.54,
+    "center_label": "Expected",
     "base": 4000,
-    "remainder": 7414.54,
+    "remainder": 865.54,
     "shares": {
-      "smarty": {"base": 4000, "remainder": 3707.27, "total": 7707.27},
-      "tom": {"base": 0, "remainder": 3707.27, "total": 3707.27}
-    }
+      "smarty": {"base": 4000, "remainder": 432.77, "total": 4432.77, "drawn": 350, "remaining": 4082.77},
+      "tom": {"base": 0, "remainder": 432.77, "total": 432.77, "drawn": 500, "remaining": -67.23}
+    },
+    "cases": [
+      {"id": "best", "label": "Best", "profit": 6493.11, "smarty": 5246.56, "tom": 1246.56},
+      {"id": "worst", "label": "Worst", "profit": 2039.43, "smarty": 2039.43, "tom": 0}
+    ]
   },
+  "cash_runway": {
+    "balance": 382.93,
+    "balance_label": "TD balance",
+    "balance_note": "Nov 12, after the $446.93 instant payout",
+    "expected_low": 78.63,
+    "expected_low_label": "Expected low",
+    "expected_low_note": "Mon Nov 16, after the iList Seller Assist charge (~$2,794)",
+    "worst_low": -2392.78,
+    "worst_low_label": "Worst low",
+    "worst_low_note": "Nov 20. Negative Nov 16-24.",
+    "payout_note": "Assumes the $1,454.07 Stripe payout lands Nov 13. If it does not, a $1,375.44 deposit is needed."
+  },
+  "forecast_assumptions": [
+    "Renewal collection rate 91.9% expected (93.0% best, 88.2% worst).",
+    "GHL wallet recharges about $229/day. GHL bills continuously as the wallet depletes; there's no month-end tru-up.",
+    "November GHL total expected $10,449.71."
+  ],
   "products": [
     {
       "id": "crm",
@@ -127,12 +152,14 @@
     {"name": "Guerrero", "amount": 209, "failed": null}
   ],
   "weekly_actuals_title": "Last 4 weeks + current week",
+  "month_cash_profit_to_date": -362.92,
+  "month_cash_profit_label": "Nov 1-12 cash profit to date",
   "weekly_actuals": [
     {"week_start": "2026-10-12", "income": 8854.31, "expense": 4933.81, "profit": 3920.50, "distributions": 2300.00, "partial": false},
     {"week_start": "2026-10-19", "income": 7137.20, "expense": 3346.56, "profit": 3790.64, "distributions": 2500.00, "partial": false},
     {"week_start": "2026-10-26", "income": 6335.10, "expense": 2232.87, "profit": 4102.23, "distributions": 4000.00, "partial": false},
     {"week_start": "2026-11-02", "income": 5476.53, "expense": 5015.12, "profit": 461.41, "distributions": 2250.00, "partial": false},
-    {"week_start": "2026-11-09", "income": 1922.04, "expense": 1000.00, "profit": 922.04, "distributions": 100.00, "partial": true, "through": "2026-11-10"}
+    {"week_start": "2026-11-09", "income": 1922.04, "expense": 2746.37, "profit": -824.33, "distributions": 600.00, "partial": true, "through": "2026-11-12", "expense_note": "Expense is $1,580.17 operating plus $1,166.20 affiliate payouts paid via Venmo/PayPal (October catch-up)."}
   ],
   "snapshots": ["2026-11-12"]
 }
