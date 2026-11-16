@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "as_of": "2026-11-16",
-  "last_updated_label": "Last updated Nov 16, 2026, source Finni forecast.",
+  "last_updated_label": "Last updated Nov 16, 2026 10:06 AM ET. Next check Tue Nov 17 10 AM ET.",
   "company": "SP Smart Business Solutions LLC",
   "partners": [
     {"id": "smarty", "name": "Smarty"},
@@ -21,7 +21,7 @@
     "expected_cash_label": "Expected November cash profit",
     "expected_cash_best": 8729.15,
     "expected_cash_worst": 2226.29,
-    "hero_note": "Expected includes BPO partner revenue $2,012 (net $1,953.35) due Nov 15, not yet received, and Larry Weiss's Nov 13 payment, net $186.86, landing in TD Nov 16. Best also includes Chris DiCristo.",
+    "hero_note": "BPO November seat charge is pending: expected ~$2,012 (net $1,953.35), not posted in Stripe as of 10:06 AM ET Nov 16. Larry Weiss's Nov 13 payment, net $186.86, is expected inside the Nov 15 payout still in transit. Best also includes Chris partner seats, not posted.",
     "cash_profit": 12302.39,
     "cash_profit_label": "October cash profit (TD actual)",
     "affiliate_payouts": 886.61,
@@ -61,20 +61,21 @@
     "worst_with_bpo": -252.57,
     "worst_with_bpo_label": "Worst plus BPO",
     "worst_with_bpo_note": "Fri Nov 20",
-    "risk_banner": "Worst-case deposit needed $2,205.92 by Fri Nov 20 ($252.57 if BPO pays)."
+    "risk_banner": "Worst-case deposit needed $2,205.92 by Fri Nov 20 ($252.57 if BPO pays).",
+    "payout_note": "Stripe: $1,454.07 reached TD Nov 12. $2,496.12 instant payout Nov 15 and $96.50 in transit (Larry's $186.86 expected inside these). TD cash not yet confirmed. No TD export after Nov 12."
   },
   "partner_revenue": {
     "title": "Partner revenue",
     "kicker": "Enterprise partners",
     "status": "Pending",
-    "status_line": "BPO is due Nov 15 and lands in TD Mon Nov 16 via Stripe payout.",
+    "status_line": "BPO November seat charge is pending. Not posted in Stripe as of 10:06 AM ET Nov 16. No failed charge visible.",
     "partners": [
       {
         "name": "BPO",
         "contact": "Joban Brown",
         "expected": 2012,
         "net": 1953.35,
-        "note": "Amount moves with active users.",
+        "note": "Pending. Expected ~$2,012 (roster suggests $2,069). Not posted in Stripe as of 10:06 AM ET Nov 16. No failed charge visible. Last seat charge $2,196 on Oct 15, one day later than the usual pattern.",
         "history": [
           {"date": "2026-08-14", "amount": 2450},
           {"date": "2026-09-15", "amount": 2589},
@@ -84,7 +85,7 @@
       {
         "name": "Chris DiCristo",
         "unconfirmed": true,
-        "note": "Included in the best case only.",
+        "note": "Partner seats $99, best case only. Not posted. His $119 on Nov 13 is his regular subscription, already in the forecast.",
         "history": [
           {"label": "Aug", "amount": 297},
           {"label": "Sep", "amount": 416},
@@ -96,7 +97,7 @@
       {
         "name": "Larry Weiss",
         "net": 186.86,
-        "note": "Nov 13 payment. New November revenue. Lands in TD Nov 16."
+        "note": "Nov 13 payment. New November revenue, net $186.86, expected inside the $2,496.12 instant payout on Nov 15 and the $96.50 in transit. TD cash not yet confirmed."
       }
     ]
   },
