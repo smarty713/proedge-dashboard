@@ -34,6 +34,7 @@ html:has(#app:not([hidden])){background:#12161c}
 #app .range{margin:8px 0 0;color:#c8bfb2;font-size:.84rem}
 #app .secondary{margin:6px 0 0;color:#8d867b;font-size:.78rem;line-height:1.35}
 #app .hero-note{margin:12px 0 0;color:#c8bfb2;font-size:.84rem;max-width:82ch;line-height:1.45}
+#app .risk-banner{margin:0 0 14px;padding:12px 14px;border-radius:12px;background:rgba(224,139,132,.12);border:1px solid rgba(224,139,132,.45);color:#f0c2be;font-size:.95rem}
 #app .pcard-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-end}
 #app .hist{display:inline-block;margin:2px 12px 0 0;white-space:nowrap}
 #app .runway{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
@@ -514,6 +515,7 @@ function runwayHTML(data){
   return `<section class="panel" id="runway">
     <p class="kicker">Cash</p>
     <h2>Cash runway</h2>
+    ${r.risk_banner?`<p class="risk-banner">${esc(r.risk_banner)}</p>`:""}
     <div class="runway">
       <article><p class="label">${esc(r.balance_label||"TD balance")}</p><p class="value">${esc(usd(r.balance))}</p><p class="hint">${esc(r.balance_note||"")}</p></article>
       <article><p class="label">${esc(r.expected_low_label||"Expected low")}</p><p class="value">${esc(usd(r.expected_low))}</p><p class="hint">${esc(r.expected_low_note||"")}</p></article>
@@ -538,7 +540,7 @@ function partnerRevenueHTML(data){
     const hist=historyBits(p.history);
     return `<article class="pcard" data-partner-revenue="${esc(p.name)}">
       <header><div><h3>${esc(p.name)}</h3>${p.contact?`<p class="detail">${esc(p.contact)}</p>`:""}</div>${p.unconfirmed?`<span class="badge pending">Unconfirmed</span>`:""}</header>
-      <p class="cust"><strong>${esc(usd(p.expected))}</strong> expected</p>
+      ${p.expected==null?"":`<p class="cust"><strong>${esc(usd(p.expected))}</strong> expected</p>`}
       ${p.net!=null?`<p class="fine">Net ${esc(usd(p.net))}</p>`:""}
       ${p.note?`<p class="fine">${esc(p.note)}</p>`:""}
       ${hist?`<p class="fine hist-row">${hist}</p>`:""}
@@ -553,7 +555,11 @@ function partnerRevenueHTML(data){
       ${block.status?`<span class="badge pending">${esc(block.status)}</span>`:""}
     </div>
     ${block.status_line?`<p class="lede">${esc(block.status_line)}</p>`:""}
-    <div class="cards">${cards}</div>
+    <div class="cards">${cards}${(block.new_revenue||[]).map(p=>`<article class="pcard" data-partner-revenue="${esc(p.name)}">
+      <header><div><h3>${esc(p.name)}</h3><p class="detail">New November revenue</p></div></header>
+      <p class="cust"><strong>${esc(usd(p.net))}</strong> net</p>
+      ${p.note?`<p class="fine">${esc(p.note)}</p>`:""}
+    </article>`).join("")}</div>
   </section>`;
 }
 function productChartHTML(){
