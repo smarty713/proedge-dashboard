@@ -518,6 +518,7 @@ function runwayHTML(data){
     ${r.risk_banner?`<p class="risk-banner">${esc(r.risk_banner)}</p>`:""}
     <div class="runway">
       <article><p class="label">${esc(r.balance_label||"TD balance")}</p><p class="value">${esc(usd(r.balance))}</p><p class="hint">${esc(r.balance_note||"")}</p></article>
+      ${r.best_low==null?"":`<article><p class="label">${esc(r.best_low_label||"Best low")}</p><p class="value">${esc(usd(r.best_low))}</p><p class="hint">${esc(r.best_low_note||"")}</p></article>`}
       <article><p class="label">${esc(r.expected_low_label||"Expected low")}</p><p class="value">${esc(usd(r.expected_low))}</p><p class="hint">${esc(r.expected_low_note||"")}</p></article>
       <article class="tight"><p class="label">${esc(r.worst_low_label||"Worst low")}</p><p class="value">${esc(usd(r.worst_low))}</p><p class="hint">${esc(r.worst_low_note||"")}</p></article>
       ${r.worst_with_bpo==null?"":`<article><p class="label">${esc(r.worst_with_bpo_label||"Worst plus BPO")}</p><p class="value">${esc(usd(r.worst_with_bpo))}</p><p class="hint">${esc(r.worst_with_bpo_note||"")}</p></article>`}
@@ -539,8 +540,8 @@ function partnerRevenueHTML(data){
   const cards=block.partners.map(p=>{
     const hist=historyBits(p.history);
     return `<article class="pcard" data-partner-revenue="${esc(p.name)}">
-      <header><div><h3>${esc(p.name)}</h3>${p.contact?`<p class="detail">${esc(p.contact)}</p>`:""}</div>${p.unconfirmed?`<span class="badge pending">Unconfirmed</span>`:""}</header>
-      ${p.expected==null?"":`<p class="cust"><strong>${esc(usd(p.expected))}</strong> expected</p>`}
+      <header><div><h3>${esc(p.name)}</h3>${p.contact?`<p class="detail">${esc(p.contact)}</p>`:""}</div>${p.paid?`<span class="badge good">Paid</span>`:(p.unconfirmed?`<span class="badge pending">Unconfirmed</span>`:"")}</header>
+      ${p.expected==null?"":`<p class="cust"><strong>${esc(usd(p.expected))}</strong> ${p.paid?"charged":"expected"}</p>`}
       ${p.net!=null?`<p class="fine">Net ${esc(usd(p.net))}</p>`:""}
       ${p.note?`<p class="fine">${esc(p.note)}</p>`:""}
       ${hist?`<p class="fine hist-row">${hist}</p>`:""}
@@ -552,9 +553,10 @@ function partnerRevenueHTML(data){
         <p class="kicker">${esc(block.kicker||"Enterprise partners")}</p>
         <h2>${esc(block.title||"Partner revenue")}</h2>
       </div>
-      ${block.status?`<span class="badge pending">${esc(block.status)}</span>`:""}
+      ${block.status?`<span class="badge ${esc(block.status_tone||"pending")}">${esc(block.status)}</span>`:""}
     </div>
     ${block.status_line?`<p class="lede">${esc(block.status_line)}</p>`:""}
+    ${(block.flags||[]).map(f=>`<p class="lede">${esc(f)}</p>`).join("")}
     <div class="cards">${cards}${(block.new_revenue||[]).map(p=>`<article class="pcard" data-partner-revenue="${esc(p.name)}">
       <header><div><h3>${esc(p.name)}</h3><p class="detail">New November revenue</p></div></header>
       <p class="cust"><strong>${esc(usd(p.net))}</strong> net</p>

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "as_of": "2026-11-16",
-  "last_updated_label": "Last updated Nov 16, 2026 10:06 AM ET. Next check Tue Nov 17 10 AM ET.",
+  "as_of": "2026-11-17",
+  "last_updated_label": "Last updated Nov 17, 2026 2:49 PM ET.",
   "company": "SP Smart Business Solutions LLC",
   "partners": [
     {"id": "smarty", "name": "Smarty"},
@@ -17,11 +17,11 @@
     "revenue": 17580.16,
     "profit": 11414.54,
     "run_rate_note": "Subscription run-rate $11,414.54 (excludes GHL wallet recharges ~$10K/mo and iList $2,794)",
-    "expected_cash_profit": 7005.75,
+    "expected_cash_profit": 5855.29,
     "expected_cash_label": "Expected November cash profit",
-    "expected_cash_best": 8729.15,
-    "expected_cash_worst": 2226.29,
-    "hero_note": "BPO November seat charge is pending: expected ~$2,012 (net $1,953.35), not posted in Stripe as of 10:06 AM ET Nov 16. Larry Weiss's Nov 13 payment, net $186.86, is expected inside the Nov 15 payout still in transit. Best also includes Chris partner seats, not posted.",
+    "expected_cash_best": 7227.80,
+    "expected_cash_worst": 3029.18,
+    "hero_note": "BPO seat charge paid Nov 16: $1,936.00 (net $1,879.56) vs $2,012 planned. Chris $99 seat charge is not in Stripe and is excluded from best. Ross Gahagan $99 is not yet in Stripe, paid through Nov 28, and is not counted in November.",
     "cash_profit": 12302.39,
     "cash_profit_label": "October cash profit (TD actual)",
     "affiliate_payouts": 886.61,
@@ -34,48 +34,49 @@
   },
   "split_basis": "Based on expected November cash profit",
   "split": {
-    "profit": 7005.75,
+    "profit": 5855.29,
     "center_label": "Expected",
     "base": 4000,
-    "remainder": 3005.75,
+    "remainder": 1855.29,
     "shares": {
-      "smarty": {"base": 4000, "remainder": 1502.87, "total": 5502.87, "drawn": 350, "remaining": 5152.87},
-      "tom": {"base": 0, "remainder": 1502.88, "total": 1502.88, "drawn": 500, "remaining": 1002.88}
+      "smarty": {"base": 4000, "remainder": 927.65, "total": 4927.65, "drawn": 350, "remaining": 4577.65},
+      "tom": {"base": 0, "remainder": 927.64, "total": 927.64, "drawn": 500, "remaining": 427.64}
     },
     "cases": [
-      {"id": "best", "label": "Best", "profit": 8729.15, "smarty": 6364.58, "tom": 2364.57},
-      {"id": "worst", "label": "Worst", "profit": 2226.29, "smarty": 2226.29, "tom": 0},
-      {"id": "worst_bpo", "label": "Worst plus BPO", "profit": 4179.64, "smarty": 4089.82, "tom": 89.82}
+      {"id": "best", "label": "Best", "profit": 7227.80, "smarty": 5613.90, "tom": 1613.90},
+      {"id": "worst", "label": "Worst", "profit": 3029.18, "smarty": 3029.18, "tom": 0}
     ]
   },
   "cash_runway": {
     "balance": 382.93,
     "balance_label": "TD balance",
     "balance_note": "Nov 12",
-    "expected_low": 382.93,
+    "best_low": 872.96,
+    "best_low_label": "Best low",
+    "best_low_note": "Deposit needed $0",
+    "expected_low": 594.22,
     "expected_low_label": "Expected low",
-    "expected_low_note": "Nov 12. Expected Nov 16 balance $2,218.84.",
-    "worst_low": -2205.92,
-    "worst_low_label": "Worst",
-    "worst_low_note": "Fri Nov 20",
-    "worst_with_bpo": -252.57,
-    "worst_with_bpo_label": "Worst plus BPO",
-    "worst_with_bpo_note": "Fri Nov 20",
-    "risk_banner": "Worst-case deposit needed $2,205.92 by Fri Nov 20 ($252.57 if BPO pays).",
-    "payout_note": "Stripe: $1,454.07 reached TD Nov 12. $2,496.12 instant payout Nov 15 and $96.50 in transit (Larry's $186.86 expected inside these). TD cash not yet confirmed. No TD export after Nov 12."
+    "expected_low_note": "Deposit needed $0",
+    "worst_low": -1435.08,
+    "worst_low_label": "Worst low",
+    "worst_low_note": "Nov 17. Deposit needed $1,435.08 by Fri Nov 20.",
+    "risk_banner": "Best and Expected need no deposit. Worst-case deposit needed $1,435.08 by Fri Nov 20.",
+    "payout_note": "Nov 16 expenses actual: iList/Falcon $2,892 (vs $2,696 modeled), India leads (PayPal IProService) $1,290 (vs $645 modeled), plus Remitly VA payroll, GHL wallet, Grok, and Pro Edge Offers."
   },
   "partner_revenue": {
     "title": "Partner revenue",
     "kicker": "Enterprise partners",
-    "status": "Pending",
-    "status_line": "BPO November seat charge is pending. Not posted in Stripe as of 10:06 AM ET Nov 16. No failed charge visible.",
+    "status": "BPO paid",
+    "status_tone": "good",
+    "status_line": "BPO charged $1,936.00 on Nov 16 2:45 PM ET (net $1,879.56 after Stripe fee). 13 Tech + 54 Realty seats, vs $2,012 planned.",
     "partners": [
       {
         "name": "BPO",
         "contact": "Joban Brown",
-        "expected": 2012,
-        "net": 1953.35,
-        "note": "Pending. Expected ~$2,012 (roster suggests $2,069). Not posted in Stripe as of 10:06 AM ET Nov 16. No failed charge visible. Last seat charge $2,196 on Oct 15, one day later than the usual pattern.",
+        "expected": 1936,
+        "net": 1879.56,
+        "paid": true,
+        "note": "Paid Nov 16 2:45 PM ET. 13 Tech + 54 Realty seats, vs $2,012 planned.",
         "history": [
           {"date": "2026-08-14", "amount": 2450},
           {"date": "2026-09-15", "amount": 2589},
@@ -85,13 +86,16 @@
       {
         "name": "Chris DiCristo",
         "unconfirmed": true,
-        "note": "Partner seats $99, best case only. Not posted. His $119 on Nov 13 is his regular subscription, already in the forecast.",
+        "note": "Partner seats $99. Not in Stripe, so excluded from best. His $119 on Nov 13 is his regular subscription, already in the forecast.",
         "history": [
           {"label": "Aug", "amount": 297},
           {"label": "Sep", "amount": 416},
           {"label": "Oct", "amount": null}
         ]
       }
+    ],
+    "flags": [
+      "Ross Gahagan $99 is not yet in Stripe. Paid through Nov 28 and not counted in November."
     ],
     "new_revenue": [
       {
@@ -204,5 +208,5 @@
     {"week_start": "2026-11-02", "income": 5476.53, "expense": 5015.12, "profit": 461.41, "distributions": 2250.00, "partial": false},
     {"week_start": "2026-11-09", "income": 1922.04, "expense": 2746.37, "profit": -824.33, "distributions": 600.00, "partial": true, "through": "2026-11-12", "expense_note": "Expense is $1,580.17 operating plus $1,166.20 affiliate payouts paid via Venmo/PayPal (October catch-up)."}
   ],
-  "snapshots": ["2026-11-12", "2026-11-13", "2026-11-16"]
+  "snapshots": ["2026-11-12", "2026-11-13", "2026-11-16", "2026-11-17"]
 }
