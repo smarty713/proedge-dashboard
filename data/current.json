@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "as_of": "2026-11-17",
-  "last_updated_label": "Last updated Nov 17, 2026 2:49 PM ET.",
+  "as_of": "2026-11-22",
+  "last_updated_label": "Last updated Nov 22, 2026 9:53 PM ET.",
   "company": "SP Smart Business Solutions LLC",
   "partners": [
     {"id": "smarty", "name": "Smarty"},
@@ -17,11 +17,12 @@
     "revenue": 17580.16,
     "profit": 11414.54,
     "run_rate_note": "Subscription run-rate $11,414.54 (excludes GHL wallet recharges ~$10K/mo and iList $2,794)",
-    "expected_cash_profit": 5855.29,
+    "expected_cash_profit": 3949.76,
     "expected_cash_label": "Expected November cash profit",
-    "expected_cash_best": 7227.80,
-    "expected_cash_worst": 3029.18,
-    "hero_note": "BPO seat charge paid Nov 16: $1,936.00 (net $1,879.56) vs $2,012 planned. Chris $99 seat charge is not in Stripe and is excluded from best. Ross Gahagan $99 is not yet in Stripe, paid through Nov 28, and is not counted in November.",
+    "expected_cash_best": 5850.73,
+    "expected_cash_worst": 2996.40,
+    "hero_note": "TD cash basis. Draws are excluded from profit. Starting TD available balance is $1,063. Expected Nov 30 balance is $4,695.61 before the $2,000 month-end draws and $2,695.61 after.",
+    "accrual_view": "If Nov 29-30 billings, which post to TD Dec 1-2, are counted as November: expected profit $5,840.38 (Smarty $4,920.19, Tom $920.19); best $7,973.63; worst $4,789.32.",
     "cash_profit": 12302.39,
     "cash_profit_label": "October cash profit (TD actual)",
     "affiliate_payouts": 886.61,
@@ -34,34 +35,34 @@
   },
   "split_basis": "Based on expected November cash profit",
   "split": {
-    "profit": 5855.29,
+    "profit": 3949.76,
     "center_label": "Expected",
-    "base": 4000,
-    "remainder": 1855.29,
+    "base": 3949.76,
+    "remainder": 0,
+    "flag": "Tom's November draws would total $1,500, against a projected share of $0 to $925.",
     "shares": {
-      "smarty": {"base": 4000, "remainder": 927.65, "total": 4927.65, "drawn": 350, "remaining": 4577.65},
-      "tom": {"base": 0, "remainder": 927.64, "total": 927.64, "drawn": 500, "remaining": 427.64}
+      "smarty": {"base": 3949.76, "remainder": 0, "total": 3949.76, "drawn": 350, "remaining": 3599.76},
+      "tom": {"base": 0, "remainder": 0, "total": 0, "drawn": 500, "remaining": -500}
     },
     "cases": [
-      {"id": "best", "label": "Best", "profit": 7227.80, "smarty": 5613.90, "tom": 1613.90},
-      {"id": "worst", "label": "Worst", "profit": 3029.18, "smarty": 3029.18, "tom": 0}
+      {"id": "best", "label": "Best", "profit": 5850.73, "smarty": 4925.36, "tom": 925.36},
+      {"id": "worst", "label": "Worst", "profit": 2996.40, "smarty": 2996.40, "tom": 0}
     ]
   },
   "cash_runway": {
-    "balance": 382.93,
+    "balance": 1063,
     "balance_label": "TD balance",
-    "balance_note": "Nov 12",
-    "best_low": 872.96,
-    "best_low_label": "Best low",
-    "best_low_note": "Deposit needed $0",
-    "expected_low": 594.22,
+    "balance_note": "Starting available balance, Nov 22",
+    "best_low": 6596.58,
+    "best_low_label": "Best, Nov 30",
+    "best_low_note": "Before draws. After $2,000 month-end draws: $4,596.58.",
+    "expected_low": 2101.25,
     "expected_low_label": "Expected low",
-    "expected_low_note": "Deposit needed $0",
-    "worst_low": -1435.08,
-    "worst_low_label": "Worst low",
-    "worst_low_note": "Nov 17. Deposit needed $1,435.08 by Fri Nov 20.",
-    "risk_banner": "Best and Expected need no deposit. Worst-case deposit needed $1,435.08 by Fri Nov 20.",
-    "payout_note": "Nov 16 expenses actual: iList/Falcon $2,892 (vs $2,696 modeled), India leads (PayPal IProService) $1,290 (vs $645 modeled), plus Remitly VA payroll, GHL wallet, Grok, and Pro Edge Offers."
+    "expected_low_note": "Nov 24. No deposit needed.",
+    "worst_low": 3742.25,
+    "worst_low_label": "Worst, Nov 30",
+    "worst_low_note": "Before draws. After $2,000 month-end draws: $1,742.25.",
+    "risk_banner": "No deposit needed. Revenue risk: 13 past-due invoices totaling $1,362 are open and are not counted in expected. About 70 declined GHL wallet auto-recharges from Nov 17 to Nov 22."
   },
   "partner_revenue": {
     "title": "Partner revenue",
@@ -106,9 +107,9 @@
     ]
   },
   "forecast_assumptions": [
-    "Renewal collection rate 91.9% expected (93.0% best, 88.2% worst).",
-    "GHL wallet recharges about $229/day. GHL bills continuously as the wallet depletes; there's no month-end tru-up.",
-    "November GHL total expected $10,449.71."
+    "46 renewals from Nov 22 to Nov 30, totaling $4,715.50 gross.",
+    "GHL wallet about $229 a day.",
+    "Vendors $758.36, including the GHL agency subscription of $536.76 on Nov 27."
   ],
   "products": [
     {
@@ -208,5 +209,5 @@
     {"week_start": "2026-11-02", "income": 5476.53, "expense": 5015.12, "profit": 461.41, "distributions": 2250.00, "partial": false},
     {"week_start": "2026-11-09", "income": 1922.04, "expense": 2746.37, "profit": -824.33, "distributions": 600.00, "partial": true, "through": "2026-11-12", "expense_note": "Expense is $1,580.17 operating plus $1,166.20 affiliate payouts paid via Venmo/PayPal (October catch-up)."}
   ],
-  "snapshots": ["2026-11-12", "2026-11-13", "2026-11-16", "2026-11-17"]
+  "snapshots": ["2026-11-12", "2026-11-13", "2026-11-16", "2026-11-17", "2026-11-22"]
 }

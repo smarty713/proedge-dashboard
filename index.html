@@ -481,6 +481,7 @@ function splitHTML(data){
     </div>
     ${casesHTML(data)}
     ${drawsHTML(data)}
+    ${data.split&&data.split.flag?`<p class="lede">${esc(data.split.flag)}</p>`:""}
   </section>`;
 }
 function casesHTML(data){
