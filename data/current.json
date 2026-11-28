@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "as_of": "2026-11-22",
-  "last_updated_label": "Last updated Nov 22, 2026 9:53 PM ET.",
+  "as_of": "2026-11-28",
+  "last_updated_label": "Last updated Sat Nov 28, 2026, 6:11 AM ET. Sources: TD through Nov 27 and Stripe.",
   "company": "SP Smart Business Solutions LLC",
   "partners": [
     {"id": "smarty", "name": "Smarty"},
@@ -17,17 +17,17 @@
     "revenue": 17580.16,
     "profit": 11414.54,
     "run_rate_note": "Subscription run-rate $11,414.54 (excludes GHL wallet recharges ~$10K/mo and iList $2,794)",
-    "expected_cash_profit": 3949.76,
+    "expected_cash_profit": 8573.37,
     "expected_cash_label": "Expected November cash profit",
-    "expected_cash_best": 5850.73,
-    "expected_cash_worst": 2996.40,
-    "hero_note": "TD cash basis. Draws are excluded from profit. Starting TD available balance is $1,063. Expected Nov 30 balance is $4,695.61 before the $2,000 month-end draws and $2,695.61 after.",
-    "accrual_view": "If Nov 29-30 billings, which post to TD Dec 1-2, are counted as November: expected profit $5,840.38 (Smarty $4,920.19, Tom $920.19); best $7,973.63; worst $4,789.32.",
+    "expected_cash_best": 8904.15,
+    "expected_cash_worst": 8281.49,
+    "hero_note": "Sources: TD through Nov 27 and Stripe. Deposits, all Stripe, $24,143.50. Operating expenses $17,913.65. Operating profit $6,229.85. Partner draws of $6,850.00 are distributions, not expenses. Current TD balance $2,544.63. Stripe still pending $1,089.79, expected in TD Mon Nov 30. Expected profit is up $4,624 from $3,949.76 on Nov 22. Active MRR is $18,849.16 from 88 people. Paying CRM is $11,489.33 from 69 people, one combined total. $1 seats are 47 people and $51, shown separately and not included in MRR. Headline MRR at risk is $783.",
+    "accrual_view": "Counting Nov 30 collections that land in December, expected profit is $9,574.02 (Smarty $6,787.01, Tom $2,787.01).",
     "cash_profit": 12302.39,
     "cash_profit_label": "October cash profit (TD actual)",
     "affiliate_payouts": 886.61,
     "affiliate_note": "Comes out of CRM",
-    "owed": 675
+    "owed": 757
   },
   "charge_timing": {
     "label": "Charge timing",
@@ -35,34 +35,35 @@
   },
   "split_basis": "Based on expected November cash profit",
   "split": {
-    "profit": 3949.76,
+    "profit": 8573.37,
     "center_label": "Expected",
-    "base": 3949.76,
-    "remainder": 0,
-    "flag": "Tom's November draws would total $1,500, against a projected share of $0 to $925.",
+    "base": 4000,
+    "remainder": 4573.37,
+    "flag": "Draws are distributions, not expenses. Smarty $5,350. Tom $1,500 ($1,000 on Nov 2 and $500 on Nov 12). Against the expected share, Tom is at $1,500 of $2,286.69 and Smarty is at $5,350 of $6,286.69.",
     "shares": {
-      "smarty": {"base": 3949.76, "remainder": 0, "total": 3949.76, "drawn": 350, "remaining": 3599.76},
-      "tom": {"base": 0, "remainder": 0, "total": 0, "drawn": 500, "remaining": -500}
+      "smarty": {"base": 4000, "remainder": 2286.69, "total": 6286.69, "drawn": 5350, "remaining": 936.69},
+      "tom": {"base": 0, "remainder": 2286.69, "total": 2286.69, "drawn": 1500, "remaining": 786.69}
     },
     "cases": [
-      {"id": "best", "label": "Best", "profit": 5850.73, "smarty": 4925.36, "tom": 925.36},
-      {"id": "worst", "label": "Worst", "profit": 2996.40, "smarty": 2996.40, "tom": 0}
+      {"id": "best", "label": "Best", "profit": 8904.15, "smarty": 6452.08, "tom": 2452.08, "td_before": 5218.93, "td_after": 4218.93},
+      {"id": "worst", "label": "Worst", "profit": 8281.49, "smarty": 6140.75, "tom": 2140.75, "td_before": 4596.27, "td_after": 3596.27}
     ]
   },
   "cash_runway": {
-    "balance": 1063,
+    "balance": 2544.63,
     "balance_label": "TD balance",
-    "balance_note": "Starting available balance, Nov 22",
-    "best_low": 6596.58,
+    "balance_note": "Through Nov 27, from $1,063 on Nov 22 plus Nov 23-27. Stripe still pending $1,089.79, expected in TD Mon Nov 30.",
+    "best_low": 5218.93,
     "best_low_label": "Best, Nov 30",
-    "best_low_note": "Before draws. After $2,000 month-end draws: $4,596.58.",
-    "expected_low": 2101.25,
-    "expected_low_label": "Expected low",
-    "expected_low_note": "Nov 24. No deposit needed.",
-    "worst_low": 3742.25,
+    "best_low_note": "After a possible Tom $1,000 draw: $4,218.93.",
+    "expected_low": 4888.15,
+    "expected_low_label": "Expected, Nov 30",
+    "expected_low_note": "After a possible Tom $1,000 draw: $3,888.15.",
+    "worst_low": 4596.27,
     "worst_low_label": "Worst, Nov 30",
-    "worst_low_note": "Before draws. After $2,000 month-end draws: $1,742.25.",
-    "risk_banner": "No deposit needed. Revenue risk: 13 past-due invoices totaling $1,362 are open and are not counted in expected. About 70 declined GHL wallet auto-recharges from Nov 17 to Nov 22."
+    "worst_low_note": "After a possible Tom $1,000 draw: $3,596.27.",
+    "risk_banner": "Past due is 10 invoices totaling $757, down from 13 invoices and $1,362 on Nov 22.",
+    "payout_note": "Operating expenses through Nov 27, $17,913.65: GHL wallet top-ups $6,220.35, GHL AI Employee $1,926.85, GHL card add-on and usage $297.00, GHL agency subscription $536.76, Falcon/iList $2,892.00, India leads $1,290.00, Listing to Leads vendor $750.00, VA payroll (Remitly) $1,110.00, affiliates $1,994.85, Million Verifier (one-off) $89.00, other vendors $737.27, international fees $41.37, Pro Edge Offers $27.20."
   },
   "partner_revenue": {
     "title": "Partner revenue",
@@ -87,7 +88,7 @@
       {
         "name": "Chris DiCristo",
         "unconfirmed": true,
-        "note": "Partner seats $99. Not in Stripe, so excluded from best. His $119 on Nov 13 is his regular subscription, already in the forecast.",
+        "note": "The $99 seat charge is not in Stripe and is excluded from best. His $119 on Nov 13 is his regular subscription, already in the forecast.",
         "history": [
           {"label": "Aug", "amount": 297},
           {"label": "Sep", "amount": 416},
@@ -188,20 +189,25 @@
     }
   ],
   "unique_customers": 97,
-  "unique_customer_note": "Excludes Robert Weichelt and Jeffery B Jewelers. Includes Mark States (Seller Assist, $82.50/mo). VRG merged into Cee Rhodes.",
+  "unique_customer_note": "Open invoices are 10, totaling $757. The paying, past due, and not billed counts on the chart were not rerun. Paid since Nov 22: Guerrero, Spinner, Cee Rhodes, Kelby, and Bexley (Bexley migrated to a $208 plan). Rob Dietrich migrated, not a full churn: dropped AI Employee $97 and the $208 plan, started paid $79 Seller Assist, net -$226 a month. Melinda Walencewicz churned Nov 25: canceled the $119 Listing to Leads plus Falcon and the $278 CRM plan, net -$397 a month. Greg Raymer said he is leaving the CRM on Jan 4, but Stripe shows only a $790 a year Seller Assist renewing Mar 17, 2027, with no cancel scheduled. That is unconfirmed and has no booked impact.",
+  "products_note": "BPO headcount, the not-billed Listing to Leads and Seller Assist vendor lists, and the bundle reallocation were not rerun. Those figures were last updated earlier.",
   "customer_status": [
     {"id": "paying", "label": "Paying", "count": 85},
     {"id": "past_due", "label": "Past due", "count": 3},
     {"id": "not_billed", "label": "Not billed", "count": 9}
   ],
   "past_due": [
-    {"name": "Giancanelli", "amount": 218, "failed": "2026-11-12"},
-    {"name": "Krautbauer", "amount": 248, "failed": "2026-11-11"},
-    {"name": "Guerrero", "amount": 209, "failed": null}
+    {"name": "Robb Krautbauer", "amount": 248, "note": "No retries left"},
+    {"name": "Stacio Castillo", "amount": 79, "note": "No retries left. Period ends Nov 28 at 9:16 AM ET"},
+    {"name": "Jarvis Gandy", "amount": 79, "note": "Open"},
+    {"name": "Jason DeLong", "amount": 119, "note": "Open"},
+    {"name": "Jason DeLong", "amount": 99, "note": "New invoice"},
+    {"name": "Nanci Gilbert", "amount": 129, "note": "Listing Engine, new"},
+    {"name": "$1 seats", "amount": 4, "note": "4 seats"}
   ],
   "weekly_actuals_title": "Last 4 weeks + current week",
-  "month_cash_profit_to_date": -362.92,
-  "month_cash_profit_label": "Nov 1-12 cash profit to date",
+  "month_cash_profit_to_date": 6229.85,
+  "month_cash_profit_label": "Operating profit through Nov 27",
   "weekly_actuals": [
     {"week_start": "2026-10-12", "income": 8854.31, "expense": 4933.81, "profit": 3920.50, "distributions": 2300.00, "partial": false},
     {"week_start": "2026-10-19", "income": 7137.20, "expense": 3346.56, "profit": 3790.64, "distributions": 2500.00, "partial": false},
@@ -209,5 +215,5 @@
     {"week_start": "2026-11-02", "income": 5476.53, "expense": 5015.12, "profit": 461.41, "distributions": 2250.00, "partial": false},
     {"week_start": "2026-11-09", "income": 1922.04, "expense": 2746.37, "profit": -824.33, "distributions": 600.00, "partial": true, "through": "2026-11-12", "expense_note": "Expense is $1,580.17 operating plus $1,166.20 affiliate payouts paid via Venmo/PayPal (October catch-up)."}
   ],
-  "snapshots": ["2026-11-12", "2026-11-13", "2026-11-16", "2026-11-17", "2026-11-22"]
+  "snapshots": ["2026-11-12", "2026-11-13", "2026-11-16", "2026-11-17", "2026-11-22", "2026-11-28"]
 }

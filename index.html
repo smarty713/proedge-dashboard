@@ -341,15 +341,15 @@ function splitOk(data){
     const s=split.shares[ids[i]];
     if(!s) return false;
     const b=cents(s.base), r=cents(s.remainder), t=cents(s.total);
-    if(b===null||r===null||t===null||b+r!==t) return false;
+    if(b===null||r===null||t===null||Math.abs(b+r-t)>1) return false;
     total+=t; baseSum+=b; remSum+=r;
   }
-  if(cents(split.profit)===null||total!==cents(split.profit)) return false;
+  if(cents(split.profit)===null||Math.abs(total-cents(split.profit))>1) return false;
   const basis=data.kpis&&data.kpis.expected_cash_profit!=null?data.kpis.expected_cash_profit:(data.kpis&&data.kpis.profit);
   if(cents(basis)!==cents(split.profit)) return false;
-  if(baseSum+remSum!==cents(split.profit)) return false;
-  if(cents(split.remainder)!==remSum||cents(split.base)!==baseSum) return false;
-  if(cents(split.profit)-cents(split.base)!==cents(split.remainder)) return false;
+  if(Math.abs(baseSum+remSum-cents(split.profit))>1) return false;
+  if(Math.abs(cents(split.remainder)-remSum)>1||Math.abs(cents(split.base)-baseSum)>1) return false;
+  if(Math.abs((cents(split.profit)-cents(split.base))-cents(split.remainder))>1) return false;
   if(cents(split.base)>cents(rule.base_amount)) return false;
   if(cents(split.profit)>=cents(rule.base_amount)&&cents(split.base)!==cents(rule.base_amount)) return false;
   const basePartner=split.shares[rule.base_partner];
@@ -487,7 +487,10 @@ function splitHTML(data){
 function casesHTML(data){
   const cases=(data.split&&data.split.cases)||[];
   if(!cases.length) return "";
-  const cards=cases.map(c=>`<article class="partner"><p class="label">${esc(c.label)}</p><p class="hint">${esc(nameOf(data,"smarty"))} ${esc(usd(c.smarty))} · ${esc(nameOf(data,"tom"))} ${esc(usd(c.tom))}</p><p class="fine">On ${esc(usd(c.profit))} profit</p></article>`).join("");
+  const cards=cases.map(c=>{
+    const td=c.td_before!=null?`<p class="fine">TD Nov 30 ${esc(usd(c.td_before))}. After a possible Tom $1,000 draw ${esc(usd(c.td_after))}.</p>`:"";
+    return `<article class="partner"><p class="label">${esc(c.label)}</p><p class="hint">${esc(nameOf(data,"smarty"))} ${esc(usd(c.smarty))} · ${esc(nameOf(data,"tom"))} ${esc(usd(c.tom))}</p><p class="fine">On ${esc(usd(c.profit))} profit</p>${td}</article>`;
+  }).join("");
   return `<div class="cases">${cards}</div>`;
 }
 function shareLeft(remaining){
@@ -608,6 +611,7 @@ function productCardsHTML(data){
   return `<section class="block">
     <p class="kicker">Lines</p>
     <h2>Product line status</h2>
+    ${data.products_note?`<p class="lede">${esc(data.products_note)}</p>`:""}
     <div class="cards">${cards}</div>
   </section>`;
 }
@@ -624,7 +628,7 @@ function statusHTML(data){
     return `<li><i class="swatch" style="background:${color}"></i>${esc(row.label)}<b>${esc(row.count)}</b></li>`;
   }).join("");
   const due=(data.past_due||[]).map(r=>`<div class="due">
-      <div><div class="who">${esc(r.name)}</div><div class="when">${esc(failedLabel(r.failed))}</div></div>
+      <div><div class="who">${esc(r.name)}</div><div class="when">${esc(r.note||failedLabel(r.failed))}</div></div>
       <div class="amt">${esc(usd(r.amount))}</div>
     </div>`).join("");
   const owedNote=owedTie(data);
